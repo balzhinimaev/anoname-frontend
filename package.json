@@ -1,0 +1,55 @@
+{
+  "name": "telegram-dating-client-react",
+  "version": "1.0.0",
+  "description": "Telegram Mini App для анонимного знакомства",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "telegram",
+    "mini-app",
+    "dating",
+    "react",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@telegram-apps/sdk": "^2.2.2",
+    "@types/socket.io-client": "^1.4.36",
+    "axios": "^1.7.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-scripts": "^5.0.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.1",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^4.9.5"
+  },
+  "overrides": {
+    "nth-check": ">=2.0.1",
+    "postcss": ">=8.4.31",
+    "webpack-dev-server": "4.15.2",
+    "svgo": ">=2.8.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=3 -R localhost:4000:localhost:3000 -R localhost:5555:localhost:3001 -R localhost:1337:localhost:1337 -F "C:\Users\Специалист БА\.ssh\config" root@45.80.70.2
