@@ -18,23 +18,23 @@ input, textarea, .message-bubble {
   user-select: text;
 }
 
-/* CSS переменные для форм */
+/* CSS переменные для современных форм */
 :root {
-  --form-bg-light: #ffffff;
-  --form-bg-dark: #2c2c2e;
-  --input-bg-light: #f2f2f7;
-  --input-bg-dark: #3a3a3c;
-  --radio-bg-light: #f2f2f7;
-  --radio-bg-dark: #3a3a3c;
-  --checkbox-bg-light: #f2f2f7;
-  --checkbox-bg-dark: #3a3a3c;
+  --form-bg-light: rgba(255, 255, 255, 0.2);
+  --form-bg-dark: rgba(44, 44, 46, 0.3);
+  --input-bg-light: rgba(255, 255, 255, 0.15);
+  --input-bg-dark: rgba(58, 58, 60, 0.6);
+  --radio-bg-light: rgba(255, 255, 255, 0.15);
+  --radio-bg-dark: rgba(58, 58, 60, 0.6);
+  --checkbox-bg-light: rgba(255, 255, 255, 0.15);
+  --checkbox-bg-dark: rgba(58, 58, 60, 0.6);
   --text-primary-light: #1d1d1f;
   --text-primary-dark: #f2f2f7;
   --text-secondary-light: #8e8e93;
   --text-secondary-dark: #8e8e93;
   --accent-color: #007aff;
-  --shadow-subtle: rgba(0, 0, 0, 0.04);
-  --shadow-medium: rgba(0, 0, 0, 0.08);
+  --disabled-bg: rgba(142, 142, 147, 0.3);
+  --disabled-text: rgba(142, 142, 147, 0.8);
 }
 
 body {
@@ -79,25 +79,27 @@ body.tg-dark-theme {
 }
 
 .form-container {
-  background: var(--tg-theme-bg-color, var(--form-bg-light));
-  border-radius: 12px;
-  padding: 18px;
-  margin: 8px 0;
+  background: var(--form-bg-light);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 12px 0;
   transition: all 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.01);
-}
-
-/* Telegram Web (ПК) стили */
-body.tg-light-theme .form-container {
-  background: var(--tg-theme-bg-color, var(--form-bg-light));
-  color: var(--tg-theme-text-color, var(--text-primary-light));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.01);
 }
 
 body.tg-dark-theme .form-container {
-  background: var(--tg-theme-bg-color, var(--form-bg-dark));
-  color: var(--tg-theme-text-color, var(--text-primary-dark));
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+  background: var(--form-bg-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-container:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+body.tg-dark-theme .form-container:hover {
+  background: rgba(44, 44, 46, 0.5);
 }
 
 .form-group {
@@ -108,7 +110,7 @@ body.tg-dark-theme .form-container {
   display: block;
   margin-bottom: 12px;
   font-weight: 600;
-  color: var(--tg-theme-text-color, var(--text-primary-light));
+  color: var(--tg-theme-text-color, #ffffff);
   font-size: 16px;
   letter-spacing: -0.3px;
 }
@@ -120,45 +122,39 @@ body.tg-dark-theme .form-label {
 .form-input {
   width: 100%;
   padding: 14px 16px;
-  border: none;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
   font-size: 16px;
   background: var(--input-bg-light);
-  color: var(--tg-theme-text-color, var(--text-primary-light));
+  backdrop-filter: blur(10px);
+  color: var(--tg-theme-text-color, #ffffff);
   transition: all 0.3s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-/* Telegram Web инпуты */
-body.tg-light-theme .form-input {
-  background: var(--input-bg-light);
-  color: var(--tg-theme-text-color, var(--text-primary-light));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 body.tg-dark-theme .form-input {
   background: var(--input-bg-dark);
-  color: var(--tg-theme-text-color, var(--text-primary-dark));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--tg-theme-text-color, #ffffff);
 }
 
 .form-input:focus {
   outline: none;
-  background: var(--tg-theme-bg-color, #ffffff);
-  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(0, 122, 255, 0.5);
+  transform: translateY(-1px);
 }
 
 body.tg-dark-theme .form-input:focus {
-  background: #48484a;
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.15), 0 1px 6px rgba(0, 0, 0, 0.15);
+  background: rgba(72, 72, 74, 0.8);
+  border: 1px solid rgba(0, 122, 255, 0.6);
 }
 
 .form-input::placeholder {
-  color: var(--tg-theme-hint-color, var(--text-secondary-light));
+  color: rgba(255, 255, 255, 0.6);
 }
 
 body.tg-dark-theme .form-input::placeholder {
-  color: var(--tg-theme-hint-color, var(--text-secondary-dark));
+  color: rgba(242, 242, 247, 0.6);
 }
 
 .radio-group {
@@ -173,63 +169,48 @@ body.tg-dark-theme .form-input::placeholder {
   gap: 10px;
   cursor: pointer;
   padding: 12px 16px;
-  border-radius: 10px;
-  border: none;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   background: var(--radio-bg-light);
+  backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   min-width: 120px;
   justify-content: center;
   font-weight: 500;
-  color: var(--tg-theme-text-color, var(--text-primary-light));
+  color: var(--tg-theme-text-color, #ffffff);
   position: relative;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-/* Telegram Web радио кнопки */
-body.tg-light-theme .radio-item {
-  background: var(--radio-bg-light);
-  color: var(--tg-theme-text-color, var(--text-primary-light));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 body.tg-dark-theme .radio-item {
   background: var(--radio-bg-dark);
-  color: var(--tg-theme-text-color, var(--text-primary-dark));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--tg-theme-text-color, #ffffff);
 }
 
-.radio-item:hover {
-  background: rgba(0, 122, 255, 0.08);
-  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+.radio-item:hover:not(.selected) {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
 }
 
-body.tg-dark-theme .radio-item:hover {
-  background: rgba(0, 122, 255, 0.15);
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.12), 0 1px 6px rgba(0, 0, 0, 0.15);
+body.tg-dark-theme .radio-item:hover:not(.selected) {
+  background: rgba(58, 58, 60, 0.8);
 }
 
 /* Выбранное состояние - ВАЖНО: высокая специфичность */
 .radio-item.selected,
 .radio-group .radio-item.selected {
-  background: var(--tg-theme-button-color, var(--accent-color)) !important;
+  background: linear-gradient(135deg, var(--tg-theme-button-color, #007aff) 0%, rgba(0, 122, 255, 0.8) 100%) !important;
   color: var(--tg-theme-button-text-color, #ffffff) !important;
-  box-shadow: 0 3px 8px rgba(0, 122, 255, 0.25), 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 122, 255, 0.6) !important;
   font-weight: 600;
-}
-
-/* Для тёмной темы тоже */
-body.tg-dark-theme .radio-item.selected,
-body.tg-dark-theme .radio-group .radio-item.selected {
-  background: var(--tg-theme-button-color, var(--accent-color)) !important;
-  color: var(--tg-theme-button-text-color, #ffffff) !important;
-  box-shadow: 0 3px 10px rgba(0, 122, 255, 0.35), 0 1px 6px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
 }
 
 /* При hover выбранного элемента */
 .radio-item.selected:hover,
 .radio-group .radio-item.selected:hover {
-  background: var(--tg-theme-button-color, var(--accent-color)) !important;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3), 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4) !important;
 }
 
 .radio-item input[type="radio"] {
@@ -242,45 +223,38 @@ body.tg-dark-theme .radio-group .radio-item.selected {
   gap: 12px;
   cursor: pointer;
   padding: 12px 16px;
-  border-radius: 10px;
-  border: none;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   background: var(--checkbox-bg-light);
+  backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   font-weight: 500;
-  color: var(--tg-theme-text-color, var(--text-primary-light));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-body.tg-light-theme .checkbox-item {
-  background: var(--checkbox-bg-light);
-  color: var(--tg-theme-text-color, var(--text-primary-light));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+  color: var(--tg-theme-text-color, #ffffff);
 }
 
 body.tg-dark-theme .checkbox-item {
   background: var(--checkbox-bg-dark);
-  color: var(--tg-theme-text-color, var(--text-primary-dark));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--tg-theme-text-color, #ffffff);
 }
 
 .checkbox-item:hover {
-  background: rgba(0, 122, 255, 0.08);
-  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
 }
 
 body.tg-dark-theme .checkbox-item:hover {
-  background: rgba(0, 122, 255, 0.15);
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.12), 0 1px 6px rgba(0, 0, 0, 0.15);
+  background: rgba(58, 58, 60, 0.8);
 }
 
 .checkbox-item.checked {
-  background: rgba(0, 122, 255, 0.12);
-  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.1), 0 1px 4px rgba(0, 0, 0, 0.04);
+  background: rgba(0, 122, 255, 0.2);
+  border: 1px solid rgba(0, 122, 255, 0.4);
 }
 
 body.tg-dark-theme .checkbox-item.checked {
-  background: rgba(0, 122, 255, 0.25);
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.18), 0 1px 6px rgba(0, 0, 0, 0.12);
+  background: rgba(0, 122, 255, 0.3);
+  border: 1px solid rgba(0, 122, 255, 0.5);
 }
 
 .checkbox-item input[type="checkbox"] {
@@ -293,7 +267,7 @@ body.tg-dark-theme .checkbox-item.checked {
 .submit-button {
   width: 100%;
   padding: 16px;
-  background: var(--tg-theme-button-color, var(--accent-color));
+  background: linear-gradient(135deg, var(--tg-theme-button-color, #007aff) 0%, rgba(0, 122, 255, 0.8) 100%);
   color: var(--tg-theme-button-text-color, #ffffff);
   border: none;
   border-radius: 12px;
@@ -303,19 +277,26 @@ body.tg-dark-theme .checkbox-item.checked {
   transition: all 0.3s ease;
   margin-top: 24px;
   letter-spacing: -0.3px;
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.12), 0 1px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
 }
 
-.submit-button:hover {
-  background: rgba(0, 122, 255, 0.9);
-  box-shadow: 0 3px 12px rgba(0, 122, 255, 0.18), 0 2px 6px rgba(0, 0, 0, 0.06);
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
 }
 
 .submit-button:disabled {
-  background: #8e8e93;
+  background: var(--disabled-bg) !important;
+  color: var(--disabled-text) !important;
   cursor: not-allowed;
-  opacity: 0.6;
-  box-shadow: 0 1px 4px rgba(142, 142, 147, 0.08), 0 1px 2px rgba(0, 0, 0, 0.02);
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.submit-button:disabled:hover {
+  background: var(--disabled-bg) !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .title {
@@ -323,13 +304,10 @@ body.tg-dark-theme .checkbox-item.checked {
   margin-bottom: 32px;
   font-size: 28px;
   font-weight: 700;
-  color: var(--tg-theme-text-color, var(--text-primary-light));
+  color: var(--tg-theme-text-color, #ffffff);
   letter-spacing: -0.5px;
   line-height: 1.2;
-}
-
-body.tg-dark-theme .title {
-  color: var(--tg-theme-text-color, var(--text-primary-dark));
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .age-range {
@@ -339,13 +317,9 @@ body.tg-dark-theme .title {
 }
 
 @media (max-width: 480px) {
-  .container {
-    padding: 16px;
-  }
-  
   .form-container {
-    padding: 24px;
-    margin: 16px 0;
+    padding: 20px;
+    margin: 8px 0;
   }
   
   .radio-group {

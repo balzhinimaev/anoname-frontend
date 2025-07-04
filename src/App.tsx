@@ -272,70 +272,72 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <div className={`container ${currentChatId ? 'chat-mode' : ''}`}>
-        {/* Показываем заголовок и статистику только если нет активного чата */}
-        {!currentChatId && (
-          <>
-            <h1 className="title">Анонимные знакомства</h1>
-            
-            {/* Статистика поиска */}
-            {searchStats && (
-              <div style={{
-                fontSize: '11px',
-                textAlign: 'center',
-                color: 'var(--tg-theme-hint-color, #8e8e93)',
-                marginBottom: '20px',
-                lineHeight: '1.3'
-              }}>
-                👥 Онлайн: {searchStats.online.t} | 🔍 Ищут: {searchStats.t}
-                {!!searchStats.inChat && searchStats.inChat > 0 && ` | 💬 В чатах: ${searchStats.inChat}`}
-                {' | '}💕 Знакомств за 24ч: {searchStats.avgSearchTime.matches24h}
-              </div>
-            )}
-          </>
-        )}
-        
-        {!isAuthenticated && (
-          <div className="info-box warning">
-            ⚠️ Подключение к серверу недоступно. Некоторые функции могут не работать.
-          </div>
-        )}
-
-        {/* Индикатор поиска */}
-        {isSearching && (
-          <div className="info-box searching-indicator">
-            <div className="spinner"></div>
-            <div>
-              🔍 Ищем собеседника...
+      <div className="app-wrapper">
+        <div className={`container ${currentChatId ? 'chat-mode' : ''}`}>
+          {/* Показываем заголовок и статистику только если нет активного чата */}
+          {!currentChatId && (
+            <>
+              <h1 className="title">Анонимные знакомства</h1>
+              
+              {/* Статистика поиска */}
+              {searchStats && (
+                <div style={{
+                  fontSize: '11px',
+                  textAlign: 'center',
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  marginBottom: '20px',
+                  lineHeight: '1.3'
+                }}>
+                  👥 Онлайн: {searchStats.online.t} | 🔍 Ищут: {searchStats.t}
+                  {!!searchStats.inChat && searchStats.inChat > 0 && ` | 💬 В чатах: ${searchStats.inChat}`}
+                  {' | '}💕 Знакомств за 24ч: {searchStats.avgSearchTime.matches24h}
+                </div>
+              )}
+            </>
+          )}
+          
+          {!isAuthenticated && (
+            <div className="info-box warning">
+              ⚠️ Подключение к серверу недоступно. Некоторые функции могут не работать.
             </div>
-            <button 
-              onClick={handleCancelSearch}
-              className="cancel-search-button"
-            >
-              Отменить поиск
-            </button>
-          </div>
-        )}
+          )}
 
-        {/* Полноценный чат */}
-        {currentChatId && partnerInfo && currentUser ? (
-          <Chat
-            chatId={currentChatId}
-            partnerInfo={partnerInfo}
-            currentUser={currentUser}
-            onEndChat={() => {
-              setCurrentChatId(null);
-              setPartnerInfo(null);
-            }}
-          />
-        ) : (
-          /* Форма поиска, когда нет активного чата */
-          <SearchForm 
-            onSubmit={handleSearchSubmit} 
-            user={user} 
-            disabled={isSearching}
-          />
-        )}
+          {/* Индикатор поиска */}
+          {isSearching && (
+            <div className="searching-indicator">
+              <div className="spinner"></div>
+              <div>
+                🔍 Ищем собеседника...
+              </div>
+              <button 
+                onClick={handleCancelSearch}
+                className="cancel-search-button"
+              >
+                Отменить поиск
+              </button>
+            </div>
+          )}
+
+          {/* Полноценный чат */}
+          {currentChatId && partnerInfo && currentUser ? (
+            <Chat
+              chatId={currentChatId}
+              partnerInfo={partnerInfo}
+              currentUser={currentUser}
+              onEndChat={() => {
+                setCurrentChatId(null);
+                setPartnerInfo(null);
+              }}
+            />
+          ) : (
+            /* Форма поиска, когда нет активного чата */
+            <SearchForm 
+              onSubmit={handleSearchSubmit} 
+              user={user} 
+              disabled={isSearching}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
