@@ -4,7 +4,8 @@ import {
   WebSocketSearchMatched,
   WebSocketSearchStats,
   WebSocketChatMessageReceived,
-  WebSocketChatTyping,
+  WebSocketChatStartTyping,
+  WebSocketChatStopTyping,
   WebSocketChatEnded,
   WebSocketError,
   SearchData
@@ -24,7 +25,8 @@ export class WebSocketService {
   private onSearchStatsHandler?: (data: WebSocketSearchStats) => void;
   private onSearchStatusHandler?: (data: any) => void;
   private onChatMessageHandler?: (data: WebSocketChatMessageReceived) => void;
-  private onChatTypingHandler?: (data: WebSocketChatTyping) => void;
+  private onChatStartTypingHandler?: (data: WebSocketChatStartTyping) => void;
+  private onChatStopTypingHandler?: (data: WebSocketChatStopTyping) => void;
   private onChatReadHandler?: (data: any) => void;
   private onChatEndedHandler?: (data: WebSocketChatEnded) => void;
   private onChatRatedHandler?: (data: any) => void;
@@ -185,8 +187,12 @@ export class WebSocketService {
       this.onChatMessageHandler?.(data);
     });
 
-    this.socket.on('chat:typing', (data: WebSocketChatTyping) => {
-      this.onChatTypingHandler?.(data);
+    this.socket.on('chat:start_typing', (data: WebSocketChatStartTyping) => {
+      this.onChatStartTypingHandler?.(data);
+    });
+
+    this.socket.on('chat:stop_typing', (data: WebSocketChatStopTyping) => {
+      this.onChatStopTypingHandler?.(data);
     });
 
     this.socket.on('chat:read', (data: any) => {
@@ -319,12 +325,20 @@ export class WebSocketService {
   }
 
   // Уведомить о наборе текста
-  sendTyping(chatId: string): void {
+  sendStartTyping(chatId: string): void {
     if (!this.socket?.connected) {
-      throw new Error('WebSocket не подключен');
+      console.warn('WebSocket не подключен, не удалось отправить start_typing');
+      return;
     }
+    this.socket.emit('chat:start_typing', { chatId });
+  }
 
-    this.socket.emit('chat:typing', chatId);
+  sendStopTyping(chatId: string): void {
+    if (!this.socket?.connected) {
+      console.warn('WebSocket не подключен, не удалось отправить stop_typing');
+      return;
+    }
+    this.socket.emit('chat:stop_typing', { chatId });
   }
 
   // Отметить сообщения как прочитанные
@@ -398,8 +412,12 @@ export class WebSocketService {
     this.onChatMessageHandler = handler;
   }
 
-  onChatTyping(handler: (data: WebSocketChatTyping) => void): void {
-    this.onChatTypingHandler = handler;
+  onChatStartTyping(handler: (data: WebSocketChatStartTyping) => void): void {
+    this.onChatStartTypingHandler = handler;
+  }
+
+  onChatStopTyping(handler: (data: WebSocketChatStopTyping) => void): void {
+    this.onChatStopTypingHandler = handler;
   }
 
   onChatEnded(handler: (data: WebSocketChatEnded) => void): void {

@@ -267,7 +267,12 @@ export interface WebSocketChatMessageReceived {
   message: WebSocketMessageData;
 }
 
-export interface WebSocketChatTyping {
+export interface WebSocketChatStartTyping {
+  chatId: string;
+  userId: string;
+}
+
+export interface WebSocketChatStopTyping {
   chatId: string;
   userId: string;
 }
@@ -333,7 +338,8 @@ export interface ClientToServerEvents {
   'chat:join': (chatId: string) => void;
   'chat:leave': (chatId: string) => void;
   'chat:message': (data: WebSocketChatMessage) => void;
-  'chat:typing': (chatId: string) => void;
+  'chat:start_typing': (data: { chatId: string }) => void;
+  'chat:stop_typing': (data: { chatId: string }) => void;
   'chat:read': (data: WebSocketChatRead) => void;
   'chat:end': (data: WebSocketChatEnd) => void;
   'chat:rate': (data: WebSocketChatRate) => void;
@@ -348,7 +354,8 @@ export interface ServerToClientEvents {
   'search:expired': () => void;
   'search:stats': (data: WebSocketSearchStats) => void;
   'chat:message': (data: WebSocketChatMessageReceived) => void;
-  'chat:typing': (data: WebSocketChatTyping) => void;
+  'chat:start_typing': (data: WebSocketChatStartTyping) => void;
+  'chat:stop_typing': (data: WebSocketChatStopTyping) => void;
   'chat:read': (data: WebSocketChatRead) => void;
   'chat:ended': (data: WebSocketChatEnded) => void;
   'chat:rated': (data: WebSocketChatRated) => void;

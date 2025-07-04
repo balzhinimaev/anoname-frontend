@@ -3,7 +3,8 @@ import websocketService from '../services/websocket';
 import { hapticFeedback } from '../utils/telegram';
 import {
   WebSocketChatMessageReceived,
-  WebSocketChatTyping,
+  WebSocketChatStartTyping,
+  WebSocketChatStopTyping,
   WebSocketUser
 } from '../types';
 
@@ -33,6 +34,7 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
   const [partnerTyping, setPartnerTyping] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const partnerTypingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Настройка обработчиков WebSocket
@@ -55,12 +57,30 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
       }
     });
 
-    websocketService.onChatTyping((data: WebSocketChatTyping) => {
+    websocketService.onChatStartTyping((data: WebSocketChatStartTyping) => {
       if (data.chatId === chatId && currentUser && data.userId !== currentUser.telegramId.toString()) {
         setPartnerTyping(true);
         
-        // Убираем индикатор через 3 секунды
-        setTimeout(() => setPartnerTyping(false), 3000);
+        // Сбрасываем старый сторожевой таймер
+        if (partnerTypingTimeoutRef.current) {
+            clearTimeout(partnerTypingTimeoutRef.current);
+        }
+        
+        // Ставим новый сторожевой таймер на 30 секунд
+        partnerTypingTimeoutRef.current = setTimeout(() => {
+            setPartnerTyping(false);
+        }, 30000);
+      }
+    });
+
+    websocketService.onChatStopTyping((data: WebSocketChatStopTyping) => {
+      if (data.chatId === chatId && currentUser && data.userId !== currentUser.telegramId.toString()) {
+        setPartnerTyping(false);
+        
+        // Сбрасываем сторожевой таймер, т.к. получили подтверждение об остановке
+        if (partnerTypingTimeoutRef.current) {
+            clearTimeout(partnerTypingTimeoutRef.current);
+        }
       }
     });
 
@@ -68,6 +88,9 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
     return () => {
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
+      }
+      if (partnerTypingTimeoutRef.current) {
+        clearTimeout(partnerTypingTimeoutRef.current);
       }
     };
   }, [chatId, currentUser]);
@@ -81,13 +104,17 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
     if (!messageInput.trim()) return;
 
     try {
-      websocketService.sendMessage(chatId, messageInput.trim());
-      setMessageInput('');
-      setIsTyping(false);
-      // Сбрасываем таймаут, чтобы индикатор "печатает" не отправился после сообщения
+      // Немедленно сбрасываем таймер и отправляем stop_typing
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
+      if (isTyping) {
+        setIsTyping(false);
+        websocketService.sendStopTyping(chatId);
+      }
+      
+      websocketService.sendMessage(chatId, messageInput.trim());
+      setMessageInput('');
       hapticFeedback('light');
     } catch (error) {
       console.error('Ошибка отправки сообщения:', error);
@@ -99,20 +126,29 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
     const value = e.target.value;
     setMessageInput(value);
 
-    // Отправляем событие набора текста
-    if (value.length > 0 && !isTyping) {
+    // Если мы еще не отправляли статус "печатает", отправляем его
+    if (!isTyping && value.length > 0) {
       setIsTyping(true);
-      websocketService.sendTyping(chatId);
+      websocketService.sendStartTyping(chatId);
     }
-
-    // Сбрасываем флаг набора через 2 секунды бездействия
+    
+    // Сбрасываем предыдущий таймер на отправку "stop_typing"
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
 
+    // Если поле ввода пустое, сразу отправляем "stop_typing"
+    if (value.length === 0 && isTyping) {
+      setIsTyping(false);
+      websocketService.sendStopTyping(chatId);
+      return;
+    }
+    
+    // Устанавливаем новый таймер на 1 секунду
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
-    }, 2000);
+      websocketService.sendStopTyping(chatId);
+    }, 1000); // 1 секунда бездействия
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
