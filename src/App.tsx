@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SearchForm from './components/SearchForm';
 import Chat from './components/Chat';
-import './App.css';
+import './styles/main.scss';
 import { 
   initTelegramApp, 
   getTelegramUser,
@@ -281,13 +281,7 @@ const App: React.FC = () => {
               
               {/* Статистика поиска */}
               {searchStats && (
-                <div style={{
-                  fontSize: '11px',
-                  textAlign: 'center',
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  marginBottom: '20px',
-                  lineHeight: '1.3'
-                }}>
+                <div className="search-stats">
                   👥 Онлайн: {searchStats.online.t} | 🔍 Ищут: {searchStats.t}
                   {!!searchStats.inChat && searchStats.inChat > 0 && ` | 💬 В чатах: ${searchStats.inChat}`}
                   {' | '}💕 Знакомств за 24ч: {searchStats.avgSearchTime.matches24h}

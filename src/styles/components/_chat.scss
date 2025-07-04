@@ -1,0 +1,212 @@
+// ======================
+// КОМПОНЕНТЫ ЧАТА
+// ======================
+
+// === Chat Container ===
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: calc(100vh - 10px);
+  max-height: none;
+  @include glassmorphism($chat-bg-light, $chat-bg-dark);
+  border-radius: $border-radius-xl;
+  overflow: hidden;
+  margin: 0;
+
+  @include mobile {
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+}
+
+// === Chat Header ===
+.chat-header {
+  padding: $spacing-lg $spacing-xl;
+  @include gradient-bg(
+    linear-gradient(135deg, var(--tg-theme-button-color, $accent-color) 0%, rgba(0, 122, 255, 0.8) 100%),
+    linear-gradient(135deg, var(--tg-theme-button-color, $accent-color) 0%, rgba(0, 122, 255, 0.8) 100%)
+  );
+  color: var(--tg-theme-button-text-color, #ffffff);
+  @include flex-between;
+  flex-shrink: 0;
+  backdrop-filter: blur(20px);
+
+  &-title {
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: -0.3px;
+  }
+
+  &-info {
+    font-size: 14px;
+    opacity: 0.9;
+    font-weight: 500;
+  }
+}
+
+.end-chat-button {
+  @include button-secondary(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2));
+  color: white;
+  padding: $spacing-sm $spacing-lg;
+  font-size: 13px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    @include hover-lift(-1px);
+  }
+}
+
+// === Messages Area ===
+.messages-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-xl;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  background: transparent;
+
+  &-placeholder {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    padding: $spacing-xl $spacing-lg;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+
+    body.tg-dark-theme & {
+      color: rgba(242, 242, 247, 0.7);
+    }
+  }
+}
+
+// === Message Rows ===
+.message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: $spacing-sm;
+
+  &.from-me {
+    flex-direction: row-reverse;
+  }
+}
+
+// === Message Bubbles ===
+.message-bubble {
+  @include message-bubble;
+
+  &.from-me {
+    @include message-bubble(true);
+  }
+
+  &.from-partner {
+    @include message-bubble(false);
+  }
+}
+
+.message-time {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 6px;
+  text-align: right;
+  color: inherit;
+  font-weight: 400;
+}
+
+// === Typing Indicator ===
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  padding: 0 $spacing-sm;
+
+  &-bubble {
+    padding: $spacing-md 18px;
+    @include glassmorphism($message-partner-bg-light, $message-partner-bg-dark);
+    border-radius: 18px;
+  }
+}
+
+// === Input Area ===
+.input-area {
+  display: flex;
+  align-items: center;
+  padding: $spacing-xl $spacing-2xl;
+  gap: $spacing-lg;
+  @include glassmorphism($input-area-bg-light, $input-area-bg-dark);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+  body.tg-dark-theme & {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.message-input {
+  flex: 1;
+  border-radius: 20px;
+  padding: 14px $spacing-xl;
+  font-size: 15px;
+  @include glassmorphism($input-bg-light, $input-bg-dark, 0.2, 10px);
+  color: var(--tg-theme-text-color, #ffffff);
+  transition: all $transition-normal;
+
+  &:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(0, 122, 255, 0.5);
+    @include hover-lift(-1px);
+
+    body.tg-dark-theme & {
+      background: rgba(72, 72, 74, 0.8);
+      border: 1px solid rgba(0, 122, 255, 0.6);
+    }
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+
+    body.tg-dark-theme & {
+      color: rgba(242, 242, 247, 0.6);
+    }
+  }
+}
+
+.send-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  @include gradient-bg(
+    linear-gradient(135deg, var(--tg-theme-button-color, $accent-color) 0%, rgba(0, 122, 255, 0.8) 100%),
+    linear-gradient(135deg, var(--tg-theme-button-color, $accent-color) 0%, rgba(0, 122, 255, 0.8) 100%)
+  );
+  color: var(--tg-theme-button-text-color, #ffffff);
+  @include flex-center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 18px;
+  transition: all $transition-normal;
+  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+
+  &:hover:not(:disabled) {
+    @include hover-lift;
+    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+  }
+
+  &:disabled {
+    background: $disabled-bg !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+} 

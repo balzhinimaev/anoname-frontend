@@ -1,0 +1,124 @@
+// ======================
+// КОМПОНЕНТЫ ФОРМ
+// ======================
+
+// === Form Container ===
+.form-container {
+  @include form-container;
+}
+
+// === Form Groups ===
+.form-group {
+  margin-bottom: $spacing-xl;
+}
+
+// === Form Labels ===
+.form-label {
+  display: block;
+  margin-bottom: $spacing-md;
+  font-weight: 600;
+  color: var(--tg-theme-text-color, #ffffff);
+  font-size: 16px;
+  letter-spacing: -0.3px;
+
+  body.tg-dark-theme & {
+    color: var(--tg-theme-text-color, $text-primary-dark);
+  }
+}
+
+// === Form Inputs ===
+.form-input {
+  @include input-field;
+}
+
+// === Radio Groups ===
+.radio-group {
+  display: flex;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.radio-item {
+  @include selectable-item;
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  @include mobile {
+    min-width: 100%;
+  }
+}
+
+// === Checkbox Items ===
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  cursor: pointer;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $border-radius-md;
+  @include glassmorphism($checkbox-bg-light, $checkbox-bg-dark);
+  transition: all $transition-normal;
+  font-weight: 500;
+  color: var(--tg-theme-text-color, #ffffff);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    @include hover-lift(-1px);
+
+    body.tg-dark-theme & {
+      background: rgba(58, 58, 60, 0.8);
+    }
+  }
+
+  &.checked {
+    background: rgba(0, 122, 255, 0.2);
+    border: 1px solid rgba(0, 122, 255, 0.4);
+
+    body.tg-dark-theme & {
+      background: rgba(0, 122, 255, 0.3);
+      border: 1px solid rgba(0, 122, 255, 0.5);
+    }
+  }
+
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--tg-theme-button-color, $accent-color);
+    border-radius: 6px;
+  }
+}
+
+// === Submit Button ===
+.submit-button {
+  @include button-primary;
+  width: 100%;
+  padding: $spacing-lg;
+  font-size: 18px;
+  margin-top: $spacing-2xl;
+  letter-spacing: -0.3px;
+}
+
+// === Age Range ===
+.age-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+}
+
+// === Mobile Adaptations ===
+@include mobile {
+  .form-container {
+    padding: $spacing-xl;
+    margin: $spacing-sm 0;
+  }
+  
+  .radio-group {
+    flex-direction: column;
+  }
+  
+  .radio-item {
+    min-width: 100%;
+  }
+} 

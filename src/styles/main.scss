@@ -1,0 +1,32 @@
+// ======================
+// ГЛАВНЫЙ ФАЙЛ СТИЛЕЙ
+// ======================
+
+// 1. Абстракции (переменные, миксины, функции)
+@import 'abstracts/variables';
+@import 'abstracts/mixins';
+
+// 2. Базовые стили (сброс, типографика)
+@import 'base/reset';
+
+// 3. Layout (структура страницы)
+@import 'layout/app';
+
+// 4. Компоненты
+@import 'components/forms';
+@import 'components/chat';
+
+// 5. CSS переменные для совместимости с Telegram WebApp
+:root {
+  // Применяем некоторые переменные как CSS custom properties
+  // для обратной совместимости с Telegram WebApp
+  --form-bg-light: #{$form-bg-light};
+  --form-bg-dark: #{$form-bg-dark};
+  --input-bg-light: #{$input-bg-light};
+  --input-bg-dark: #{$input-bg-dark};
+  --card-bg-light: #{$card-bg-light};
+  --card-bg-dark: #{$card-bg-dark};
+  --accent-color: #{$accent-color};
+  --disabled-bg: #{$disabled-bg};
+  --disabled-text: #{$disabled-text};
+} 

@@ -6,7 +6,6 @@ import {
   WebSocketChatTyping,
   WebSocketUser
 } from '../types';
-import './Chat.css';
 
 interface ChatProps {
   chatId: string;
