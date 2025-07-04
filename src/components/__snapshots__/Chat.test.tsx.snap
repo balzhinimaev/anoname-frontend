@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`components/Chat renders correctly 1`] = `
+<div
+  className="chat-container"
+>
+  <div
+    className="chat-header"
+  >
+    Загрузка чата...
+  </div>
+</div>
+`;

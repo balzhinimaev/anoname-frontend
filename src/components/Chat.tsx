@@ -7,28 +7,21 @@ import {
   WebSocketChatStopTyping,
   WebSocketUser
 } from '../types';
+import { useChatStore, ChatMessage } from '../store/chatStore';
+import { useAuthStore } from '../store/authStore';
 
-interface ChatProps {
-  chatId: string;
-  partnerInfo: {
-    telegramId: string;
-    gender: 'male' | 'female';
-    age: number;
-  };
-  currentUser: WebSocketUser | null;
-  onEndChat: () => void;
-}
+const Chat: React.FC = () => {
+  const { 
+    currentChatId: chatId, 
+    partnerInfo, 
+    endChat,
+    messages,
+    _addMessage
+  } = useChatStore();
+  
+  const { user } = useAuthStore();
+  const currentUser = user;
 
-interface ChatMessage {
-  id: string;
-  content: string;
-  timestamp: string;
-  isFromMe: boolean;
-  sender: WebSocketUser;
-}
-
-const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [messageInput, setMessageInput] = useState<string>('');
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [partnerTyping, setPartnerTyping] = useState<boolean>(false);
@@ -38,51 +31,48 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
 
   useEffect(() => {
     // Настройка обработчиков WebSocket
-    websocketService.onChatMessage((data: WebSocketChatMessageReceived) => {
+    const handleNewMessage = (data: WebSocketChatMessageReceived) => {
       if (data.chatId === chatId) {
         const newMessage: ChatMessage = {
           id: data.message._id,
           content: data.message.content,
           timestamp: data.message.timestamp,
-          isFromMe: currentUser ? data.message.sender.telegramId === currentUser.telegramId : false,
+          isFromMe: currentUser ? data.message.sender.telegramId === currentUser.id : false,
           sender: data.message.sender
         };
         
-        setMessages(prev => [...prev, newMessage]);
+        _addMessage(newMessage);
         
         // Тактильная обратная связь для входящих сообщений
         if (!newMessage.isFromMe) {
           hapticFeedback('light');
         }
       }
-    });
+    };
+    websocketService.onChatMessage(handleNewMessage);
 
-    websocketService.onChatStartTyping((data: WebSocketChatStartTyping) => {
-      if (data.chatId === chatId && currentUser && data.userId !== currentUser.telegramId.toString()) {
+    const handleStartTyping = (data: WebSocketChatStartTyping) => {
+      if (data.chatId === chatId && currentUser && data.userId !== currentUser.id.toString()) {
         setPartnerTyping(true);
-        
-        // Сбрасываем старый сторожевой таймер
         if (partnerTypingTimeoutRef.current) {
             clearTimeout(partnerTypingTimeoutRef.current);
         }
-        
-        // Ставим новый сторожевой таймер на 30 секунд
         partnerTypingTimeoutRef.current = setTimeout(() => {
             setPartnerTyping(false);
         }, 30000);
       }
-    });
+    };
+    websocketService.onChatStartTyping(handleStartTyping);
 
-    websocketService.onChatStopTyping((data: WebSocketChatStopTyping) => {
-      if (data.chatId === chatId && currentUser && data.userId !== currentUser.telegramId.toString()) {
+    const handleStopTyping = (data: WebSocketChatStopTyping) => {
+      if (data.chatId === chatId && currentUser && data.userId !== currentUser.id.toString()) {
         setPartnerTyping(false);
-        
-        // Сбрасываем сторожевой таймер, т.к. получили подтверждение об остановке
         if (partnerTypingTimeoutRef.current) {
             clearTimeout(partnerTypingTimeoutRef.current);
         }
       }
-    });
+    };
+    websocketService.onChatStopTyping(handleStopTyping);
 
     // Очистка при размонтировании
     return () => {
@@ -93,18 +83,16 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
         clearTimeout(partnerTypingTimeoutRef.current);
       }
     };
-  }, [chatId, currentUser]);
+  }, [chatId, currentUser, _addMessage]);
 
   useEffect(() => {
-    // Прокрутка к последнему сообщению
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const handleSendMessage = (): void => {
-    if (!messageInput.trim()) return;
+    if (!messageInput.trim() || !chatId) return;
 
     try {
-      // Немедленно сбрасываем таймер и отправляем stop_typing
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
@@ -126,29 +114,27 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
     const value = e.target.value;
     setMessageInput(value);
 
-    // Если мы еще не отправляли статус "печатает", отправляем его
-    if (!isTyping && value.length > 0) {
+    if (!isTyping && value.length > 0 && chatId) {
       setIsTyping(true);
       websocketService.sendStartTyping(chatId);
     }
     
-    // Сбрасываем предыдущий таймер на отправку "stop_typing"
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
 
-    // Если поле ввода пустое, сразу отправляем "stop_typing"
-    if (value.length === 0 && isTyping) {
+    if (value.length === 0 && isTyping && chatId) {
       setIsTyping(false);
       websocketService.sendStopTyping(chatId);
       return;
     }
     
-    // Устанавливаем новый таймер на 1 секунду
     typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
-      websocketService.sendStopTyping(chatId);
-    }, 1000); // 1 секунда бездействия
+      if (chatId) {
+        setIsTyping(false);
+        websocketService.sendStopTyping(chatId);
+      }
+    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -160,8 +146,7 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
 
   const handleEndChat = (): void => {
     try {
-      websocketService.endChat(chatId, 'user_ended');
-      onEndChat();
+      endChat();
       hapticFeedback('warning');
     } catch (error) {
       console.error('Ошибка завершения чата:', error);
@@ -182,9 +167,16 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
     </svg>
   );
 
+  if (!chatId || !partnerInfo || !currentUser) {
+    return (
+      <div className="chat-container">
+        <div className="chat-header">Загрузка чата...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="chat-container">
-      {/* Заголовок чата */}
       <div className="chat-header">
         <div className="chat-header-info">
           {partnerInfo.gender === 'male' ? '👨 Мужской' : '👩 Женский'}, {partnerInfo.age} лет
@@ -197,7 +189,6 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
         </button>
       </div>
 
-      {/* Область сообщений */}
       <div className="messages-area">
         {messages.length === 0 && (
           <div className="messages-area-placeholder">
@@ -231,7 +222,6 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Поле ввода */}
       <div className="input-area">
         <input
           type="text"

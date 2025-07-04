@@ -1,12 +1,12 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent, useRef } from 'react';
 import { hapticFeedback, requestLocationWithFallback, checkLocationPermission, showTelegramAlert, getTelegram } from '../utils/telegram';
 import { 
-  SearchFormProps, 
-  SearchFormData, 
   Gender, 
   Location, 
   SearchData 
 } from '../types';
+import { useChatStore } from '../store/chatStore';
+import { useAuthStore } from '../store/authStore';
 
 const LocationStatus = {
   IDLE: 'idle' as const,
@@ -19,8 +19,11 @@ type LocationStatus = typeof LocationStatus[keyof typeof LocationStatus];
 
 const STORAGE_KEY = 'searchFormParams';
 
-const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, user, disabled = false }) => {
-  const [formData, setFormData] = useState<SearchFormData>({
+const SearchForm: React.FC = () => {
+  const { startSearch, isSearching } = useChatStore();
+  const { user } = useAuthStore();
+
+  const [formData, setFormData] = useState({
     myGender: '' as Gender,
     myAge: '',
     targetGender: '' as Gender,
@@ -217,7 +220,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, user, disabled = fals
     };
 
     try {
-      await onSubmit(searchData);
+      startSearch(searchData);
     } finally {
       setIsLoading(false);
     }
@@ -258,235 +261,218 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, user, disabled = fals
   };
 
   return (
-    <form 
-      onSubmit={handleSubmit} 
-      className="form-container"
-      style={{ 
-        opacity: disabled ? 0.6 : 1,
-        pointerEvents: disabled ? 'none' : 'auto'
-      }}
-    >
-      {/* Выбор своего пола */}
-      <div className="form-group">
-        <label className="form-label">Ваш пол</label>
-        <div className="radio-group">
-          <label className={`radio-item ${formData.myGender === 'male' ? 'selected' : ''}`}>
-            <input
-              type="radio"
-              name="myGender"
-              value="male"
-              checked={formData.myGender === 'male'}
-              onChange={handleInputChange}
-              disabled={disabled}
-            />
-            👨 Мужской
-          </label>
-          <label className={`radio-item ${formData.myGender === 'female' ? 'selected' : ''}`}>
-            <input
-              type="radio"
-              name="myGender"
-              value="female"
-              checked={formData.myGender === 'female'}
-              onChange={handleInputChange}
-              disabled={disabled}
-            />
-            👩 Женский
-          </label>
-        </div>
-      </div>
-
-      {/* Свой возраст */}
-      <div className="form-group">
-        <label htmlFor="myAge" className="form-label">Ваш возраст</label>
-        <input
-          type="number"
-          id="myAge"
-          name="myAge"
-          value={formData.myAge}
-          onChange={handleInputChange}
-          className="form-input"
-          placeholder="Введите ваш возраст"
-          min="18"
-          max="100"
-          disabled={disabled}
-        />
-      </div>
-
-      {/* Выбор пола собеседника */}
-      <div className="form-group">
-        <label className="form-label">Пол собеседника</label>
-        <div className="radio-group">
-          <label className={`radio-item ${formData.targetGender === 'male' ? 'selected' : ''}`}>
-            <input
-              type="radio"
-              name="targetGender"
-              value="male"
-              checked={formData.targetGender === 'male'}
-              onChange={handleInputChange}
-              disabled={disabled}
-            />
-            👨 Мужской
-          </label>
-          <label className={`radio-item ${formData.targetGender === 'female' ? 'selected' : ''}`}>
-            <input
-              type="radio"
-              name="targetGender"
-              value="female"
-              checked={formData.targetGender === 'female'}
-              onChange={handleInputChange}
-              disabled={disabled}
-            />
-            👩 Женский
-          </label>
-          <label className={`radio-item ${formData.targetGender === 'any' ? 'selected' : ''}`}>
-            <input
-              type="radio"
-              name="targetGender"
-              value="any"
-              checked={formData.targetGender === 'any'}
-              onChange={handleInputChange}
-              disabled={disabled}
-            />
-            🤝 Любой
-          </label>
-        </div>
-      </div>
-
-      {/* Возрастной диапазон собеседника */}
-      <div className="form-group">
-        <label className="form-label">Возраст собеседника</label>
-        <div className="age-range">
-          <div>
-            <input
-              type="number"
-              name="targetAgeMin"
-              value={formData.targetAgeMin}
-              onChange={handleInputChange}
-              className="form-input"
-              placeholder="От"
-              min="18"
-              max="100"
-              disabled={disabled}
-            />
-          </div>
-          <div>
-            <input
-              type="number"
-              name="targetAgeMax"
-              value={formData.targetAgeMax}
-              onChange={handleInputChange}
-              className="form-input"
-              placeholder="До"
-              min="18"
-              max="100"
-              disabled={disabled}
-            />
+    <form className="search-form" onSubmit={handleSubmit}>
+      <fieldset className="search-form-fieldset" disabled={isSearching}>
+        {/* Выбор своего пола */}
+        <div className="form-group">
+          <label className="form-label">Ваш пол</label>
+          <div className="radio-group">
+            <label className={`radio-item ${formData.myGender === 'male' ? 'selected' : ''}`}>
+              <input
+                type="radio"
+                name="myGender"
+                value="male"
+                checked={formData.myGender === 'male'}
+                onChange={handleInputChange}
+              />
+              👨 Мужской
+            </label>
+            <label className={`radio-item ${formData.myGender === 'female' ? 'selected' : ''}`}>
+              <input
+                type="radio"
+                name="myGender"
+                value="female"
+                checked={formData.myGender === 'female'}
+                onChange={handleInputChange}
+              />
+              👩 Женский
+            </label>
           </div>
         </div>
-      </div>
 
-      {/* Геолокация с улучшенным интерфейсом */}
-      <div className="form-group">
-        <label className={`checkbox-item ${formData.useLocation ? 'checked' : ''}`}>
+        {/* Свой возраст */}
+        <div className="form-group">
+          <label htmlFor="myAge" className="form-label">Ваш возраст</label>
           <input
-            type="checkbox"
-            name="useLocation"
-            checked={formData.useLocation}
+            type="number"
+            id="myAge"
+            name="myAge"
+            value={formData.myAge}
             onChange={handleInputChange}
-            disabled={disabled}
+            className="form-input"
+            placeholder="Введите ваш возраст"
+            min="18"
+            max="100"
           />
-          <span style={{ color: getLocationStatusColor() }}>
-            {getLocationStatusText()}
-          </span>
-        </label>
-        
-        {formData.useLocation && (
-          <div style={{ marginTop: '8px', fontSize: '14px' }}>
-            {locationStatus === LocationStatus.ERROR && locationError && (
-              <div style={{ 
-                color: 'var(--tg-theme-destructive-text-color, #ff3b30)',
-                marginBottom: '8px'
-              }}>
-                {locationError}
-              </div>
-            )}
-            
-            {permissionStatus === 'denied' && (
-              <div style={{ 
-                color: 'var(--tg-theme-hint-color, #999)',
-                marginBottom: '8px'
-              }}>
-                💡 Разрешите геолокацию в настройках браузера
-              </div>
-            )}
-            
-            {(locationStatus === LocationStatus.ERROR || (!location && locationStatus !== LocationStatus.LOADING)) && (
-              <button
-                type="button"
-                onClick={handleLocationRequest}
-                disabled={disabled}
-                style={{
-                  background: 'var(--tg-theme-button-color, #0088cc)',
-                  color: 'var(--tg-theme-button-text-color, white)',
-                  border: 'none',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  opacity: 1
-                }}
-              >
-                🔄 Обновить местоположение
-              </button>
-            )}
-            
-            {location && locationStatus === LocationStatus.SUCCESS && (
-              <div style={{ 
-                color: 'var(--tg-theme-hint-color, #999)',
-                fontSize: '12px'
-              }}>
-                Координаты: {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+        </div>
 
-      {/* Кнопка отправки */}
-      <button
-        type="submit"
-        className="submit-button"
-        disabled={!isFormValid || isLoading || disabled}
-      >
-        {disabled 
-          ? '⏸️ Поиск недоступен' 
-          : isLoading 
+        {/* Выбор пола собеседника */}
+        <div className="form-group">
+          <label className="form-label">Пол собеседника</label>
+          <div className="radio-group">
+            <label className={`radio-item ${formData.targetGender === 'male' ? 'selected' : ''}`}>
+              <input
+                type="radio"
+                name="targetGender"
+                value="male"
+                checked={formData.targetGender === 'male'}
+                onChange={handleInputChange}
+              />
+              👨 Мужской
+            </label>
+            <label className={`radio-item ${formData.targetGender === 'female' ? 'selected' : ''}`}>
+              <input
+                type="radio"
+                name="targetGender"
+                value="female"
+                checked={formData.targetGender === 'female'}
+                onChange={handleInputChange}
+              />
+              👩 Женский
+            </label>
+            <label className={`radio-item ${formData.targetGender === 'any' ? 'selected' : ''}`}>
+              <input
+                type="radio"
+                name="targetGender"
+                value="any"
+                checked={formData.targetGender === 'any'}
+                onChange={handleInputChange}
+              />
+              🤝 Любой
+            </label>
+          </div>
+        </div>
+
+        {/* Возрастной диапазон собеседника */}
+        <div className="form-group">
+          <label className="form-label">Возраст собеседника</label>
+          <div className="age-range">
+            <div>
+              <input
+                type="number"
+                name="targetAgeMin"
+                value={formData.targetAgeMin}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="От"
+                min="18"
+                max="100"
+              />
+            </div>
+            <div>
+              <input
+                type="number"
+                name="targetAgeMax"
+                value={formData.targetAgeMax}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="До"
+                min="18"
+                max="100"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Геолокация с улучшенным интерфейсом */}
+        <div className="form-group">
+          <label className={`checkbox-item ${formData.useLocation ? 'checked' : ''}`}>
+            <input
+              type="checkbox"
+              name="useLocation"
+              checked={formData.useLocation}
+              onChange={handleInputChange}
+            />
+            <span style={{ color: getLocationStatusColor() }}>
+              {getLocationStatusText()}
+            </span>
+          </label>
+          
+          {formData.useLocation && (
+            <div style={{ marginTop: '8px', fontSize: '14px' }}>
+              {locationStatus === LocationStatus.ERROR && locationError && (
+                <div style={{ 
+                  color: 'var(--tg-theme-destructive-text-color, #ff3b30)',
+                  marginBottom: '8px'
+                }}>
+                  {locationError}
+                </div>
+              )}
+              
+              {permissionStatus === 'denied' && (
+                <div style={{ 
+                  color: 'var(--tg-theme-hint-color, #999)',
+                  marginBottom: '8px'
+                }}>
+                  💡 Разрешите геолокацию в настройках браузера
+                </div>
+              )}
+              
+              {(locationStatus === LocationStatus.ERROR || (!location && locationStatus !== LocationStatus.LOADING)) && (
+                <button
+                  type="button"
+                  onClick={handleLocationRequest}
+                  style={{
+                    background: 'var(--tg-theme-button-color, #0088cc)',
+                    color: 'var(--tg-theme-button-text-color, white)',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    opacity: 1
+                  }}
+                >
+                  🔄 Обновить местоположение
+                </button>
+              )}
+              
+              {location && locationStatus === LocationStatus.SUCCESS && (
+                <div style={{ 
+                  color: 'var(--tg-theme-hint-color, #999)',
+                  fontSize: '12px'
+                }}>
+                  Координаты: {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Кнопка отправки */}
+        <button
+          type="submit"
+          className="submit-button"
+          disabled={!isFormValid || isLoading || isSearching}
+        >
+          {isSearching 
             ? '🔍 Ищем собеседника...' 
             : '💬 Начать поиск'
-        }
-      </button>
+          }
+        </button>
 
-      {user && (
-        <div style={{ 
-          marginTop: '16px', 
-          fontSize: '14px', 
-          color: 'var(--tg-theme-hint-color, #999)', 
-          textAlign: 'center' 
-        }}>
-          Привет, {user.first_name}! 👋
-        </div>
-      )}
-      
-      {!user && (
-        <div style={{ 
-          marginTop: '16px', 
-          fontSize: '14px', 
-          color: 'var(--tg-theme-hint-color, #999)', 
-          textAlign: 'center' 
-        }}>
-          Запустите через Telegram для полного функционала
-        </div>
-      )}
+        {user && (
+          <div style={{ 
+            marginTop: '16px', 
+            fontSize: '14px', 
+            color: 'var(--tg-theme-hint-color, #999)', 
+            textAlign: 'center' 
+          }}>
+            Привет, {user.first_name}! 👋
+          </div>
+        )}
+        
+        {!user && (
+          <div style={{ 
+            marginTop: '16px', 
+            fontSize: '14px', 
+            color: 'var(--tg-theme-hint-color, #999)', 
+            textAlign: 'center' 
+          }}>
+            Запустите через Telegram для полного функционала
+          </div>
+        )}
+      </fieldset>
     </form>
   );
 };
