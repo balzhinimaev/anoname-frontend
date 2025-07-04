@@ -1,21 +1,28 @@
-// jest-dom добавляет пользовательские матчеры jest для проверки DOM-узлов.
-// позволяет делать такие вещи:
-// expect(element).toHaveTextContent(/react/i)
-// узнать больше: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom';
+// Настройки для Vitest
+import { expect, afterEach, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import * as matchers from '@testing-library/jest-dom/matchers';
+
+// Расширяем expect с матчерами jest-dom
+expect.extend(matchers);
+
+// Очищаем после каждого теста
+afterEach(() => {
+  cleanup();
+});
 
 // Глобальные моки для тестирования
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
   })),
 });
 
@@ -24,28 +31,28 @@ Object.defineProperty(window, 'Telegram', {
   writable: true,
   value: {
     WebApp: {
-      ready: jest.fn(),
-      expand: jest.fn(),
+      ready: vi.fn(),
+      expand: vi.fn(),
       initDataUnsafe: {},
       themeParams: {},
       colorScheme: 'light',
       platform: 'web',
-      showAlert: jest.fn(),
-      showConfirm: jest.fn(),
+      showAlert: vi.fn(),
+      showConfirm: vi.fn(),
       HapticFeedback: {
-        impactOccurred: jest.fn(),
-        notificationOccurred: jest.fn(),
+        impactOccurred: vi.fn(),
+        notificationOccurred: vi.fn(),
       },
       CloudStorage: {
-        getItem: jest.fn(),
-        setItem: jest.fn(),
+        getItem: vi.fn(),
+        setItem: vi.fn(),
       },
       MainButton: {
-        setText: jest.fn(),
-        show: jest.fn(),
-        hide: jest.fn(),
-        showProgress: jest.fn(),
-        hideProgress: jest.fn(),
+        setText: vi.fn(),
+        show: vi.fn(),
+        hide: vi.fn(),
+        showProgress: vi.fn(),
+        hideProgress: vi.fn(),
       },
     },
   },

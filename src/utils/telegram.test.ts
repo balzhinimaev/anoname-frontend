@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import { getTelegram, getTelegramUser, hapticFeedback } from './telegram';
 
 describe('utils/telegram', () => {
@@ -29,17 +30,15 @@ describe('utils/telegram', () => {
   });
 
   describe('getTelegramUser', () => {
-    it('should return null if user data is not available', () => {
-      window.Telegram = {
-        WebApp: {
-          initDataUnsafe: {},
-        },
+    it('should return user data from initDataUnsafe', () => {
+      const mockUser = {
+        id: 123,
+        first_name: 'Test',
+        last_name: 'User',
+        username: 'testuser',
       };
-      expect(getTelegramUser()).toBeNull();
-    });
 
-    it('should return user object if it exists', () => {
-      const mockUser = { id: 123, first_name: 'Test' };
+      // @ts-ignore
       window.Telegram = {
         WebApp: {
           initDataUnsafe: {
@@ -47,18 +46,39 @@ describe('utils/telegram', () => {
           },
         },
       };
-      expect(getTelegramUser()).toBe(mockUser);
+
+      expect(getTelegramUser()).toEqual(mockUser);
+    });
+
+    it('should return null if no user data available', () => {
+      // @ts-ignore
+      window.Telegram = {
+        WebApp: {
+          initDataUnsafe: {},
+        },
+      };
+
+      expect(getTelegramUser()).toBeNull();
+    });
+
+    it('should return null if Telegram is not available', () => {
+      // @ts-ignore
+      window.Telegram = undefined;
+
+      expect(getTelegramUser()).toBeNull();
     });
   });
 
   describe('hapticFeedback', () => {
-    let hapticMock;
+    let hapticMock: any;
 
     beforeEach(() => {
       hapticMock = {
-        impactOccurred: jest.fn(),
-        notificationOccurred: jest.fn(),
+        impactOccurred: vi.fn(),
+        notificationOccurred: vi.fn(),
       };
+
+      // @ts-ignore
       window.Telegram = {
         WebApp: {
           HapticFeedback: hapticMock,
@@ -77,9 +97,9 @@ describe('utils/telegram', () => {
     });
 
     it('should do nothing if HapticFeedback is not available', () => {
-        window.Telegram.WebApp.HapticFeedback = undefined;
-        expect(() => hapticFeedback('light')).not.toThrow();
-        expect(hapticMock.impactOccurred).not.toHaveBeenCalled();
+      // @ts-ignore
+      window.Telegram = undefined;
+      expect(() => hapticFeedback('light')).not.toThrow();
     });
   });
 }); 

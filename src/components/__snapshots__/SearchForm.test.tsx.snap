@@ -1,4 +1,177 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`components/SearchForm > renders correctly 1`] = `
+<div>
+  <form
+    class="search-form"
+  >
+    <fieldset
+      class="search-form-fieldset"
+    >
+      <div
+        class="form-group"
+      >
+        <label
+          class="form-label"
+        >
+          Ваш пол
+        </label>
+        <div
+          class="radio-group"
+        >
+          <label
+            class="radio-item "
+          >
+            <input
+              name="myGender"
+              type="radio"
+              value="male"
+            />
+            👨 Мужской
+          </label>
+          <label
+            class="radio-item "
+          >
+            <input
+              name="myGender"
+              type="radio"
+              value="female"
+            />
+            👩 Женский
+          </label>
+        </div>
+      </div>
+      <div
+        class="form-group"
+      >
+        <label
+          class="form-label"
+          for="myAge"
+        >
+          Ваш возраст
+        </label>
+        <input
+          class="form-input"
+          id="myAge"
+          max="100"
+          min="18"
+          name="myAge"
+          placeholder="Введите ваш возраст"
+          type="number"
+          value=""
+        />
+      </div>
+      <div
+        class="form-group"
+      >
+        <label
+          class="form-label"
+        >
+          Пол собеседника
+        </label>
+        <div
+          class="radio-group"
+        >
+          <label
+            class="radio-item "
+          >
+            <input
+              name="targetGender"
+              type="radio"
+              value="male"
+            />
+            👨 Мужской
+          </label>
+          <label
+            class="radio-item "
+          >
+            <input
+              name="targetGender"
+              type="radio"
+              value="female"
+            />
+            👩 Женский
+          </label>
+          <label
+            class="radio-item "
+          >
+            <input
+              name="targetGender"
+              type="radio"
+              value="any"
+            />
+            🤝 Любой
+          </label>
+        </div>
+      </div>
+      <div
+        class="form-group"
+      >
+        <label
+          class="form-label"
+        >
+          Возраст собеседника
+        </label>
+        <div
+          class="age-range"
+        >
+          <div>
+            <input
+              class="form-input"
+              max="100"
+              min="18"
+              name="targetAgeMin"
+              placeholder="От"
+              type="number"
+              value=""
+            />
+          </div>
+          <div>
+            <input
+              class="form-input"
+              max="100"
+              min="18"
+              name="targetAgeMax"
+              placeholder="До"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="form-group"
+      >
+        <label
+          class="checkbox-item "
+        >
+          <input
+            name="useLocation"
+            type="checkbox"
+          />
+          <span
+            style="color: var(--tg-theme-text-color, #000);"
+          >
+            📍 Искать ближайших собеседников
+          </span>
+        </label>
+      </div>
+      <button
+        class="submit-button"
+        disabled=""
+        type="submit"
+      >
+        💬 Начать поиск
+      </button>
+      <div
+        style="margin-top: 16px; font-size: 14px; color: var(--tg-theme-hint-color, #999); text-align: center;"
+      >
+        Запустите через Telegram для полного функционала
+      </div>
+    </fieldset>
+  </form>
+</div>
+`;
 
 exports[`components/SearchForm renders correctly 1`] = `
 <form

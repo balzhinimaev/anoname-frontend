@@ -4,10 +4,13 @@
   "description": "Telegram Mini App для анонимного знакомства",
   "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
     "type-check": "tsc --noEmit"
   },
   "keywords": [
@@ -31,14 +34,20 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.8.1",
+    "@types/node": "^22.16.0",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@types/react-test-renderer": "^18.3.1",
+    "@vitejs/plugin-react": "^4.6.0",
+    "jsdom": "^26.1.0",
     "react-test-renderer": "^18.3.1",
     "sass": "^1.89.2",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "vite": "^7.0.2",
+    "vitest": "^3.2.4"
   },
   "overrides": {
     "nth-check": ">=2.0.1",

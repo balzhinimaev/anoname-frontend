@@ -1,24 +1,25 @@
 /// <reference types="jest" />
 
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAuthStore } from './authStore';
 import anonameAPI from '../services/api';
 import { getTelegramUser } from '../utils/telegram';
-import { act } from 'react-test-renderer';
+import { act } from '@testing-library/react';
 
 // Мокаем зависимости
-jest.mock('../services/api');
-jest.mock('../utils/telegram');
-jest.mock('./socketStore', () => ({
+vi.mock('../services/api');
+vi.mock('../utils/telegram');
+vi.mock('./socketStore', () => ({
   useSocketStore: {
     getState: () => ({
-      connect: jest.fn(),
-      disconnect: jest.fn(),
+      connect: vi.fn(),
+      disconnect: vi.fn(),
     }),
   },
 }));
 
-const mockApi = anonameAPI as jest.Mocked<typeof anonameAPI>;
-const mockGetTelegramUser = getTelegramUser as jest.Mock;
+const mockApi = anonameAPI as any;
+const mockGetTelegramUser = getTelegramUser as any;
 
 describe('store/authStore', () => {
   beforeEach(() => {
@@ -32,7 +33,7 @@ describe('store/authStore', () => {
         error: null,
       });
     });
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should handle successful login', async () => {
