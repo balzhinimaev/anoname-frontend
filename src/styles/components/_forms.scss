@@ -2,6 +2,9 @@
 // КОМПОНЕНТЫ ФОРМ
 // ======================
 
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
 // === Form Container ===
 .form-container {
   @include form-container;

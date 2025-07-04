@@ -2,6 +2,9 @@
 // КОМПОНЕНТЫ ЧАТА
 // ======================
 
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
 // === Chat Container ===
 .chat-container {
   display: flex;

@@ -2,6 +2,9 @@
 // LAYOUT ПРИЛОЖЕНИЯ
 // ======================
 
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
 // === App Container ===
 .App {
   min-height: 100vh;
