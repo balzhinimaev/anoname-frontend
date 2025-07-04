@@ -2,6 +2,8 @@
 // МИКСИНЫ SCSS
 // ======================
 
+@use 'variables' as *;
+
 // --- Glassmorphism Effect ---
 @mixin glassmorphism($bg-light, $bg-dark, $border-opacity: 0.2, $blur: 20px) {
   background: $bg-light;
