@@ -6,6 +6,7 @@ import {
   WebSocketChatTyping,
   WebSocketUser
 } from '../types';
+import './Chat.css';
 
 interface ChatProps {
   chatId: string;
@@ -84,6 +85,10 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
       websocketService.sendMessage(chatId, messageInput.trim());
       setMessageInput('');
       setIsTyping(false);
+      // Сбрасываем таймаут, чтобы индикатор "печатает" не отправился после сообщения
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
       hapticFeedback('light');
     } catch (error) {
       console.error('Ошибка отправки сообщения:', error);
@@ -136,98 +141,45 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
     });
   };
 
+  const SendIcon = () => (
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+    </svg>
+  );
+
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      maxHeight: '600px',
-      background: 'var(--tg-theme-bg-color, #fff)',
-      borderRadius: '8px',
-      overflow: 'hidden'
-    }}>
+    <div className="chat-container">
       {/* Заголовок чата */}
-      <div style={{
-        padding: '16px',
-        background: 'var(--tg-theme-button-color, #0088cc)',
-        color: 'var(--tg-theme-button-text-color, white)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <div>
-          <div style={{ fontWeight: 'bold' }}>
-            💬 Анонимный чат
-          </div>
-          <div style={{ fontSize: '14px', opacity: 0.8 }}>
-            {partnerInfo.gender === 'male' ? 'Мужчина' : 'Женщина'}, {partnerInfo.age} лет
-          </div>
+      <div className="chat-header">
+        <div className="chat-header-info">
+          {partnerInfo.gender === 'male' ? '👨 Мужской' : '👩 Женский'}, {partnerInfo.age} лет
         </div>
         <button 
           onClick={handleEndChat}
-          style={{
-            background: 'rgba(255,255,255,0.2)',
-            border: 'none',
-            color: 'white',
-            padding: '8px 12px',
-            borderRadius: '6px',
-            cursor: 'pointer'
-          }}
+          className="end-chat-button"
         >
           Завершить
         </button>
       </div>
 
       {/* Область сообщений */}
-      <div style={{
-        flex: 1,
-        overflowY: 'auto',
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px'
-      }}>
+      <div className="messages-area">
         {messages.length === 0 && (
-          <div style={{
-            textAlign: 'center',
-            color: 'var(--tg-theme-hint-color, #999)',
-            padding: '20px'
-          }}>
-            💬 Начните общение! Отправьте первое сообщение.
+          <div className="messages-area-placeholder">
+            Отправьте первое сообщение 👋
           </div>
         )}
 
         {messages.map((message) => (
           <div
             key={message.id}
-            style={{
-              display: 'flex',
-              flexDirection: message.isFromMe ? 'row-reverse' : 'row',
-              alignItems: 'flex-end',
-              gap: '8px'
-            }}
+            className={`message-row ${message.isFromMe ? 'from-me' : ''}`}
           >
             <div
-              style={{
-                maxWidth: '80%',
-                padding: '12px 16px',
-                borderRadius: '18px',
-                background: message.isFromMe
-                  ? 'var(--tg-theme-button-color, #0088cc)'
-                  : 'var(--tg-theme-secondary-bg-color, #f1f1f1)',
-                color: message.isFromMe
-                  ? 'var(--tg-theme-button-text-color, white)'
-                  : 'var(--tg-theme-text-color, #000)',
-                wordBreak: 'break-word'
-              }}
+              className={`message-bubble ${message.isFromMe ? 'from-me' : 'from-partner'}`}
             >
               <div>{message.content}</div>
-              <div style={{
-                fontSize: '12px',
-                opacity: 0.7,
-                marginTop: '4px',
-                textAlign: 'right'
-              }}>
+              <div className="message-time">
                 {formatTime(message.timestamp)}
               </div>
             </div>
@@ -235,66 +187,31 @@ const Chat: React.FC<ChatProps> = ({ chatId, partnerInfo, currentUser, onEndChat
         ))}
 
         {partnerTyping && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            color: 'var(--tg-theme-hint-color, #999)',
-            fontSize: '14px'
-          }}>
-            <div style={{
-              padding: '8px 12px',
-              background: 'var(--tg-theme-secondary-bg-color, #f1f1f1)',
-              borderRadius: '12px'
-            }}>
+          <div className="typing-indicator">
+            <div className="typing-indicator-bubble">
               Собеседник печатает...
             </div>
           </div>
         )}
-
         <div ref={messagesEndRef} />
       </div>
 
       {/* Поле ввода */}
-      <div style={{
-        padding: '16px',
-        borderTop: '1px solid var(--tg-theme-secondary-bg-color, #f1f1f1)',
-        display: 'flex',
-        gap: '12px',
-        alignItems: 'center'
-      }}>
+      <div className="input-area">
         <input
           type="text"
           value={messageInput}
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
           placeholder="Введите сообщение..."
-          style={{
-            flex: 1,
-            padding: '12px 16px',
-            border: '1px solid var(--tg-theme-secondary-bg-color, #e1e1e1)',
-            borderRadius: '20px',
-            outline: 'none',
-            background: 'var(--tg-theme-bg-color, #fff)',
-            color: 'var(--tg-theme-text-color, #000)'
-          }}
+          className="message-input"
         />
         <button
           onClick={handleSendMessage}
           disabled={!messageInput.trim()}
-          style={{
-            background: messageInput.trim() 
-              ? 'var(--tg-theme-button-color, #0088cc)' 
-              : 'var(--tg-theme-hint-color, #999)',
-            color: 'white',
-            border: 'none',
-            padding: '12px 20px',
-            borderRadius: '20px',
-            cursor: messageInput.trim() ? 'pointer' : 'not-allowed',
-            fontSize: '16px'
-          }}
+          className="send-button"
         >
-          ➤
+          <SendIcon />
         </button>
       </div>
     </div>

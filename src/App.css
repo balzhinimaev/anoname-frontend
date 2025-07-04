@@ -1,13 +1,230 @@
-.App {
-  min-height: 100vh;
-  background: var(--tg-theme-bg-color, #ffffff);
+body {
+  font-size: 14px;
 }
 
-.loading {
+/* CSS переменные для адаптации к теме Telegram */
+:root {
+  --app-bg-light: #f8f9fc;
+  --app-bg-dark: #1c1c1e;
+  --card-bg-light: #ffffff;
+  --card-bg-dark: #2c2c2e;
+  --text-primary-light: #1d1d1f;
+  --text-primary-dark: #f2f2f7;
+  --text-secondary-light: #8e8e93;
+  --text-secondary-dark: #8e8e93;
+  --accent-color: #007aff;
+  --warning-bg-light: #fff9e6;
+  --warning-bg-dark: #3d2914;
+  --warning-text-light: #b8860b;
+  --warning-text-dark: #ffd60a;
+  --shadow-light: rgba(0, 0, 0, 0.04);
+  --shadow-medium: rgba(0, 0, 0, 0.08);
+  --shadow-dark: rgba(0, 0, 0, 0.15);
+}
+
+.App {
+  min-height: 100vh;
+  background: var(--tg-theme-bg-color, var(--app-bg-light));
+  padding: 8px 16px;
+  box-sizing: border-box;
+}
+
+/* Telegram Web (ПК) светлая тема */
+body.tg-light-theme .App {
+  background: var(--tg-theme-bg-color, var(--app-bg-light));
+  color: var(--tg-theme-text-color, var(--text-primary-light));
+}
+
+/* Telegram мобильное приложение светлая тема */
+@media (max-width: 768px) {
+  body.tg-light-theme .App {
+    background: var(--tg-theme-bg-color, var(--app-bg-light));
+  }
+}
+
+/* Telegram тёмная тема */
+body.tg-dark-theme .App {
+  background: var(--tg-theme-bg-color, var(--app-bg-dark));
+  color: var(--tg-theme-text-color, var(--text-primary-dark));
+}
+
+/* Фоллбэк для браузеров без Telegram */
+@media (prefers-color-scheme: dark) {
+  .App {
+    background: var(--app-bg-dark);
+    color: var(--text-primary-dark);
+  }
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Специальный класс для чата - минимальные отступы */
+.container.chat-mode {
+  margin: 0 auto;
+  padding: 0;
+}
+
+.title {
+  text-align: center;
+  color: var(--tg-theme-text-color, var(--text-primary-light));
+  margin-bottom: 20px;
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+body.tg-dark-theme .title {
+  color: var(--tg-theme-text-color, var(--text-primary-dark));
+}
+
+/* --- Loading Spinner --- */
+.loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 200px;
-  font-size: 18px;
-  color: var(--tg-theme-hint-color, #999999);
+  height: 80vh;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--tg-theme-text-color, var(--text-primary-light));
+}
+
+body.tg-dark-theme .loading-container {
+  color: var(--tg-theme-text-color, var(--text-primary-dark));
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(0, 122, 255, 0.2);
+  border-top: 2px solid var(--tg-theme-button-color, var(--accent-color));
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- Info Boxes --- */
+.info-box {
+  padding: 20px 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+  background: var(--tg-theme-bg-color, var(--card-bg-light));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  color: var(--tg-theme-text-color, var(--text-primary-light));
+  line-height: 1.5;
+}
+
+/* Особые настройки для Telegram Web (ПК) */
+body.tg-light-theme .info-box {
+  background: var(--tg-theme-bg-color, #ffffff);
+  color: var(--tg-theme-text-color, var(--text-primary-light));
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+body.tg-dark-theme .info-box {
+  background: var(--tg-theme-bg-color, var(--card-bg-dark));
+  color: var(--tg-theme-text-color, var(--text-primary-dark));
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+}
+
+.info-box:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+body.tg-dark-theme .info-box:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.info-box.warning {
+  background: var(--warning-bg-light);
+  color: var(--warning-text-light);
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(184, 134, 11, 0.05);
+}
+
+body.tg-dark-theme .info-box.warning {
+  background: var(--warning-bg-dark);
+  color: var(--warning-text-dark);
+  box-shadow: 0 1px 3px rgba(255, 214, 10, 0.05);
+}
+
+.info-box.warning:hover {
+  box-shadow: 0 2px 6px rgba(184, 134, 11, 0.08);
+}
+
+body.tg-dark-theme .info-box.warning:hover {
+  box-shadow: 0 2px 6px rgba(255, 214, 10, 0.08);
+}
+
+.stats-box div {
+  margin-bottom: 8px;
+  padding: 2px 0;
+}
+.stats-box div:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Search Indicator --- */
+.searching-indicator {
+  padding: 28px;
+  background: rgba(0, 122, 255, 0.04);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  color: var(--tg-theme-text-color, var(--text-primary-light));
+  box-shadow: 0 1px 3px rgba(0, 122, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+body.tg-dark-theme .searching-indicator {
+  background: rgba(0, 122, 255, 0.08);
+  color: var(--tg-theme-text-color, var(--text-primary-dark));
+  box-shadow: 0 1px 3px rgba(0, 122, 255, 0.08);
+}
+
+.searching-indicator:hover {
+  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+body.tg-dark-theme .searching-indicator:hover {
+  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.12);
+}
+
+.searching-indicator .spinner {
+  width: 24px;
+  height: 24px;
+  border-width: 2px;
+}
+
+.cancel-search-button {
+  background: #ff3b30;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 12px rgba(255, 59, 48, 0.2);
+}
+
+.cancel-search-button:hover {
+  background: #d70015;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(255, 59, 48, 0.3);
 } 

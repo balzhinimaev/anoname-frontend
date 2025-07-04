@@ -128,7 +128,7 @@ const App: React.FC = () => {
         setPartnerInfo(data.matchedUser);
         
         hapticFeedback('success');
-        showTelegramAlert(`Найден собеседник! ${data.matchedUser.gender === 'male' ? 'Мужчина' : 'Женщина'}, ${data.matchedUser.age} лет`);
+        showTelegramAlert(`Найден собеседник! ${data.matchedUser.gender === 'male' ? 'Мужской' : 'Женский'}, ${data.matchedUser.age} лет`);
         
         // Присоединяемся к чату
         websocketService.joinChat(data.matchedUser.chatId);
@@ -262,10 +262,9 @@ const App: React.FC = () => {
   if (isLoading) {
     return (
       <div className="App">
-        <div className="container">
-          <div className="loading">
-            🔄 Загрузка...
-          </div>
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <span>Загрузка...</span>
         </div>
       </div>
     );
@@ -273,63 +272,45 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <div className="container">
-        <h1 className="title">Анонимные знакомства</h1>
+      <div className={`container ${currentChatId ? 'chat-mode' : ''}`}>
+        {/* Показываем заголовок и статистику только если нет активного чата */}
+        {!currentChatId && (
+          <>
+            <h1 className="title">Анонимные знакомства</h1>
+            
+            {/* Статистика поиска */}
+            {searchStats && (
+              <div style={{
+                fontSize: '11px',
+                textAlign: 'center',
+                color: 'var(--tg-theme-hint-color, #8e8e93)',
+                marginBottom: '20px',
+                lineHeight: '1.3'
+              }}>
+                👥 Онлайн: {searchStats.online.t} | 🔍 Ищут: {searchStats.t}
+                {!!searchStats.inChat && searchStats.inChat > 0 && ` | 💬 В чатах: ${searchStats.inChat}`}
+                {' | '}💕 Знакомств за 24ч: {searchStats.avgSearchTime.matches24h}
+              </div>
+            )}
+          </>
+        )}
         
         {!isAuthenticated && (
-          <div style={{ 
-            padding: '16px', 
-            background: 'var(--tg-theme-secondary-bg-color, #f8f9fa)', 
-            borderRadius: '8px', 
-            marginBottom: '20px',
-            textAlign: 'center',
-            color: 'var(--tg-theme-hint-color, #999)'
-          }}>
+          <div className="info-box warning">
             ⚠️ Подключение к серверу недоступно. Некоторые функции могут не работать.
-          </div>
-        )}
-
-        {/* Статистика поиска */}
-        {searchStats && (
-          <div style={{
-            padding: '12px',
-            background: 'var(--tg-theme-secondary-bg-color, #f8f9fa)',
-            borderRadius: '8px',
-            marginBottom: '16px',
-            fontSize: '14px',
-            textAlign: 'center'
-          }}>
-            <div>
-              👥 Онлайн: {searchStats.online.t} | 🔍 Ищут: {searchStats.t}
-              {!!searchStats.inChat && searchStats.inChat > 0 && ` | 💬 В чатах: ${searchStats.inChat}`}
-            </div>
-            <div>💕 Знакомств за 24ч: {searchStats.avgSearchTime.matches24h}</div>
           </div>
         )}
 
         {/* Индикатор поиска */}
         {isSearching && (
-          <div style={{
-            padding: '16px',
-            background: 'var(--tg-theme-bg-color, #fff)',
-            border: '2px solid var(--tg-theme-button-color, #0088cc)',
-            borderRadius: '8px',
-            marginBottom: '16px',
-            textAlign: 'center'
-          }}>
-            <div style={{ marginBottom: '12px' }}>
+          <div className="info-box searching-indicator">
+            <div className="spinner"></div>
+            <div>
               🔍 Ищем собеседника...
             </div>
             <button 
               onClick={handleCancelSearch}
-              style={{
-                background: 'var(--tg-theme-destructive-text-color, #ff3b30)',
-                color: 'white',
-                border: 'none',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                cursor: 'pointer'
-              }}
+              className="cancel-search-button"
             >
               Отменить поиск
             </button>

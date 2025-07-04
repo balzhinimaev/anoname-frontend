@@ -46,13 +46,53 @@ export const setTelegramTheme = (): void => {
   // Применяем цвета темы Telegram
   const root = document.documentElement;
   const theme = tg.themeParams;
+  
+  console.log('Telegram theme params:', theme);
+  console.log('Telegram color scheme:', tg.colorScheme);
+  console.log('Telegram platform:', tg.platform);
 
+  // Основные переменные Telegram
   root.style.setProperty('--tg-theme-bg-color', theme.bg_color || '#ffffff');
   root.style.setProperty('--tg-theme-text-color', theme.text_color || '#000000');
   root.style.setProperty('--tg-theme-hint-color', theme.hint_color || '#999999');
   root.style.setProperty('--tg-theme-button-color', theme.button_color || '#0088cc');
   root.style.setProperty('--tg-theme-button-text-color', theme.button_text_color || '#ffffff');
   root.style.setProperty('--tg-theme-secondary-bg-color', theme.secondary_bg_color || '#f8f9fa');
+  
+  // Дополнительные переменные для лучшей совместимости
+  if (theme.link_color) {
+    root.style.setProperty('--tg-theme-link-color', theme.link_color);
+  }
+  
+  // Определяем тему на основе colorScheme
+  const isDark = tg.colorScheme === 'dark';
+  root.style.setProperty('--tg-color-scheme', tg.colorScheme);
+  
+  // Устанавливаем класс для CSS селекторов
+  if (isDark) {
+    document.body.classList.add('tg-dark-theme');
+    document.body.classList.remove('tg-light-theme');
+  } else {
+    document.body.classList.add('tg-light-theme');
+    document.body.classList.remove('tg-dark-theme');
+  }
+  
+  // Фоллбэки для разных платформ
+  if (!theme.secondary_bg_color) {
+    if (isDark) {
+      root.style.setProperty('--tg-theme-secondary-bg-color', '#1a1a1a');
+    } else {
+      root.style.setProperty('--tg-theme-secondary-bg-color', '#f8f9fa');
+    }
+  }
+  
+  if (!theme.hint_color) {
+    if (isDark) {
+      root.style.setProperty('--tg-theme-hint-color', '#8e8e93');
+    } else {
+      root.style.setProperty('--tg-theme-hint-color', '#999999');
+    }
+  }
 };
 
 export const showTelegramAlert = (message: string, callback?: () => void): void => {

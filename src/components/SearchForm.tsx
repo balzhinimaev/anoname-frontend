@@ -279,7 +279,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, user, disabled = fals
               onChange={handleInputChange}
               disabled={disabled}
             />
-            👨 Мужчина
+            👨 Мужской
           </label>
           <label className={`radio-item ${formData.myGender === 'female' ? 'selected' : ''}`}>
             <input
@@ -290,7 +290,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, user, disabled = fals
               onChange={handleInputChange}
               disabled={disabled}
             />
-            👩 Женщина
+            👩 Женский
           </label>
         </div>
       </div>
@@ -325,7 +325,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, user, disabled = fals
               onChange={handleInputChange}
               disabled={disabled}
             />
-            👨 Мужчина
+            👨 Мужской
           </label>
           <label className={`radio-item ${formData.targetGender === 'female' ? 'selected' : ''}`}>
             <input
@@ -336,7 +336,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, user, disabled = fals
               onChange={handleInputChange}
               disabled={disabled}
             />
-            👩 Женщина
+            👩 Женский
           </label>
           <label className={`radio-item ${formData.targetGender === 'any' ? 'selected' : ''}`}>
             <input
