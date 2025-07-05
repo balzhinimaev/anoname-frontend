@@ -10,6 +10,17 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true, // Для доступа извне (важно для Telegram Mini App)
+    // Разрешаем запросы к API серверу
+    allowedHosts: ['anoname.xyz'],
+    // Настройка прокси для API запросов
+    proxy: {
+      '/api': {
+        target: 'https://anoname.xyz',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
   
   // Настройки сборки

@@ -6,15 +6,12 @@
 @use 'abstracts/variables' as *;
 @use 'abstracts/mixins' as *;
 
-// 2. Базовые стили (сброс, типографика)
-@use 'base/reset';
-
-// 3. Layout (структура страницы)
-@use 'layout/app';
-
-// 4. Компоненты
-@use 'components/forms';
-@use 'components/chat';
+// 2. Базовые стили, компоненты и лейаут
+@use 'base/reset' as *;
+@use 'layout/app' as *;
+@use 'components/forms' as *;
+@use 'components/chat' as *;
+@use 'components/error' as *;
 
 // 5. CSS переменные для совместимости с Telegram WebApp
 :root {

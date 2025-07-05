@@ -34,7 +34,10 @@ import {
   WebSocketSearchStats
 } from '../types';
 
-const API_BASE_URL = 'https://anoname.xyz/rest_api/api';
+// Определяем базовый URL в зависимости от среды
+const API_BASE_URL = import.meta.env.DEV 
+  ? '/api/rest_api/api'  // В dev режиме используем прокси
+  : 'https://anoname.xyz/rest_api/api';  // В продакшене прямые запросы
 
 class AnonameAPI {
   private api: AxiosInstance;

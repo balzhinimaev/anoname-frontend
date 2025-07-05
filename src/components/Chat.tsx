@@ -1,140 +1,92 @@
 import React, { useState, useEffect, useRef } from 'react';
-import websocketService from '../services/websocket';
-import { hapticFeedback } from '../utils/telegram';
-import {
-  WebSocketChatMessageReceived,
-  WebSocketChatStartTyping,
-  WebSocketChatStopTyping,
-  WebSocketUser
-} from '../types';
-import { useChatStore, ChatMessage } from '../store/chatStore';
-import { useAuthStore } from '../store/authStore';
+import { useChatStore } from '../store/chatStore';
+import { useTelegramHaptics, useTypingIndicator, useSearchStats } from '../hooks';
 
 const Chat: React.FC = () => {
   const { 
-    currentChatId: chatId, 
     partnerInfo, 
     endChat,
     messages,
-    _addMessage
+    sendMessage,
+    sendStartTyping,
+    sendStopTyping,
+    isPartnerTyping
   } = useChatStore();
-  
-  const { user } = useAuthStore();
-  const currentUser = user;
 
-  const [messageInput, setMessageInput] = useState<string>('');
-  const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [partnerTyping, setPartnerTyping] = useState<boolean>(false);
+  const [messageInput, setMessageInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const partnerTypingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    // Настройка обработчиков WebSocket
-    const handleNewMessage = (data: WebSocketChatMessageReceived) => {
-      if (data.chatId === chatId) {
-        const newMessage: ChatMessage = {
-          id: data.message._id,
-          content: data.message.content,
-          timestamp: data.message.timestamp,
-          isFromMe: currentUser ? data.message.sender.telegramId === currentUser.id : false,
-          sender: data.message.sender
-        };
-        
-        _addMessage(newMessage);
-        
-        // Тактильная обратная связь для входящих сообщений
-        if (!newMessage.isFromMe) {
-          hapticFeedback('light');
-        }
-      }
-    };
-    websocketService.onChatMessage(handleNewMessage);
-
-    const handleStartTyping = (data: WebSocketChatStartTyping) => {
-      if (data.chatId === chatId && currentUser && data.userId !== currentUser.id.toString()) {
-        setPartnerTyping(true);
-        if (partnerTypingTimeoutRef.current) {
-            clearTimeout(partnerTypingTimeoutRef.current);
-        }
-        partnerTypingTimeoutRef.current = setTimeout(() => {
-            setPartnerTyping(false);
-        }, 30000);
-      }
-    };
-    websocketService.onChatStartTyping(handleStartTyping);
-
-    const handleStopTyping = (data: WebSocketChatStopTyping) => {
-      if (data.chatId === chatId && currentUser && data.userId !== currentUser.id.toString()) {
-        setPartnerTyping(false);
-        if (partnerTypingTimeoutRef.current) {
-            clearTimeout(partnerTypingTimeoutRef.current);
-        }
-      }
-    };
-    websocketService.onChatStopTyping(handleStopTyping);
-
-    // Очистка при размонтировании
-    return () => {
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
-      if (partnerTypingTimeoutRef.current) {
-        clearTimeout(partnerTypingTimeoutRef.current);
-      }
-    };
-  }, [chatId, currentUser, _addMessage]);
+  const { hapticFeedback } = useTelegramHaptics();
+  const searchStats = useSearchStats();
+  
+  const { isTyping, startTyping, stopTyping } = useTypingIndicator(
+    sendStartTyping,
+    sendStopTyping,
+    2000 // таймаут в мс
+  );
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+  
+  useEffect(() => {
+    if (messages.length > 0 && !messages[messages.length - 1].isFromMe) {
+        hapticFeedback('light');
+    }
+  }, [messages, hapticFeedback]);
+
+  // Функция для определения, должны ли сообщения быть сгруппированы
+  const shouldGroupWithPrevious = (currentIndex: number): boolean => {
+    if (currentIndex === 0) return false;
+    
+    const currentMessage = messages[currentIndex];
+    const previousMessage = messages[currentIndex - 1];
+    
+    // Проверяем, что отправитель тот же
+    if (currentMessage.isFromMe !== previousMessage.isFromMe) return false;
+    
+    // Проверяем временной интервал (1 минута = 60000 мс)
+    const currentTime = new Date(currentMessage.timestamp).getTime();
+    const previousTime = new Date(previousMessage.timestamp).getTime();
+    const timeDifference = currentTime - previousTime;
+    
+    return timeDifference <= 60000; // 1 минута
+  };
+
+  const shouldGroupWithNext = (currentIndex: number): boolean => {
+    if (currentIndex === messages.length - 1) return false;
+    
+    const currentMessage = messages[currentIndex];
+    const nextMessage = messages[currentIndex + 1];
+    
+    // Проверяем, что отправитель тот же
+    if (currentMessage.isFromMe !== nextMessage.isFromMe) return false;
+    
+    // Проверяем временной интервал (1 минута = 60000 мс)
+    const currentTime = new Date(currentMessage.timestamp).getTime();
+    const nextTime = new Date(nextMessage.timestamp).getTime();
+    const timeDifference = nextTime - currentTime;
+    
+    return timeDifference <= 60000; // 1 минута
+  };
 
   const handleSendMessage = (): void => {
-    if (!messageInput.trim() || !chatId) return;
-
-    try {
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
-      if (isTyping) {
-        setIsTyping(false);
-        websocketService.sendStopTyping(chatId);
-      }
-      
-      websocketService.sendMessage(chatId, messageInput.trim());
-      setMessageInput('');
-      hapticFeedback('light');
-    } catch (error) {
-      console.error('Ошибка отправки сообщения:', error);
-      hapticFeedback('error');
-    }
+    if (!messageInput.trim()) return;
+    
+    sendMessage(messageInput);
+    setMessageInput('');
+    stopTyping(); // Немедленно останавливаем индикатор после отправки
+    hapticFeedback('light');
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
     setMessageInput(value);
 
-    if (!isTyping && value.length > 0 && chatId) {
-      setIsTyping(true);
-      websocketService.sendStartTyping(chatId);
+    if (value) {
+      startTyping();
+    } else {
+      stopTyping();
     }
-    
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-
-    if (value.length === 0 && isTyping && chatId) {
-      setIsTyping(false);
-      websocketService.sendStopTyping(chatId);
-      return;
-    }
-    
-    typingTimeoutRef.current = setTimeout(() => {
-      if (chatId) {
-        setIsTyping(false);
-        websocketService.sendStopTyping(chatId);
-      }
-    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -145,12 +97,8 @@ const Chat: React.FC = () => {
   };
 
   const handleEndChat = (): void => {
-    try {
-      endChat();
-      hapticFeedback('warning');
-    } catch (error) {
-      console.error('Ошибка завершения чата:', error);
-    }
+    endChat();
+    hapticFeedback('warning');
   };
 
   const formatTime = (timestamp: string): string => {
@@ -161,85 +109,134 @@ const Chat: React.FC = () => {
     });
   };
 
+  const truncateUsername = (username: string): string => {
+    return username.length > 9 ? username.slice(0, 9) + "..." : username;
+  };
+
   const SendIcon = () => (
     <svg viewBox="0 0 24 24" fill="currentColor">
       <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
     </svg>
   );
+  
+  const TypingIndicator = () => (
+    <div className="typing-indicator">
+        <span />
+        <span />
+        <span />
+    </div>
+  );
 
-  if (!chatId || !partnerInfo || !currentUser) {
+  if (!partnerInfo) {
     return (
-      <div className="chat-container">
-        <div className="chat-header">Загрузка чата...</div>
-      </div>
+      <>
+        {searchStats && (
+          <div className="compact-stats">
+            онлайн: {searchStats.online.t} | ищут: {searchStats.t} | в чате: {searchStats.inChat || 0}
+          </div>
+        )}
+        <div className="chat-container">
+          <div className="chat-header">Загрузка чата...</div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <div className="chat-header-info">
-          {partnerInfo.gender === 'male' ? '👨 Мужской' : '👩 Женский'}, {partnerInfo.age} лет
+    <>
+      {searchStats && (
+        <div className="compact-stats">
+          онлайн: {searchStats.online.t} | ищут: {searchStats.t} | в чате: {searchStats.inChat || 0}
         </div>
-        <button 
-          onClick={handleEndChat}
-          className="end-chat-button"
-        >
-          Завершить
-        </button>
+      )}
+      <div className="chat-container">
+      <div className="chat-header">
+        <div className="chat-header-info" onClick={() => {}}>
+          <div className="avatar">
+            {partnerInfo.gender === 'male' ? '👨' : '👩'}
+          </div>
+          <div className="user-info">
+            <div className="username">
+              {truncateUsername("anoname")}
+            </div>
+            <div className="user-age">{partnerInfo.age} лет</div>
+          </div>
+        </div>
+        <div className="chat-header-actions">
+          <button 
+            onClick={handleEndChat}
+            className="end-chat-button"
+          >
+            Завершить
+          </button>
+          <button 
+            onClick={() => {}}
+            className="chat-menu-button"
+            title="Меню чата"
+          >
+            ⋮
+          </button>
+        </div>
       </div>
 
       <div className="messages-area">
-        {messages.length === 0 && (
+        {messages.length === 0 && !isPartnerTyping && (
           <div className="messages-area-placeholder">
             Отправьте первое сообщение 👋
           </div>
         )}
 
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`message-row ${message.isFromMe ? 'from-me' : ''}`}
-          >
+        {messages.map((message, index) => {
+          const isGroupedWithPrevious = shouldGroupWithPrevious(index);
+          const isGroupedWithNext = shouldGroupWithNext(index);
+          
+          return (
             <div
-              className={`message-bubble ${message.isFromMe ? 'from-me' : 'from-partner'}`}
+              key={message.id}
+              className={`message-bubble ${message.isFromMe ? 'my-message' : 'partner-message'} ${
+                isGroupedWithPrevious ? 'grouped-with-previous' : ''
+              } ${
+                isGroupedWithNext ? 'grouped-with-next' : ''
+              }`}
             >
-              <div>{message.content}</div>
-              <div className="message-time">
-                {formatTime(message.timestamp)}
+              <div className="message-content-wrapper">
+                <div className="message-content">{message.content}</div>
+                <div className="message-time-spacer"></div>
+                <div className="message-time">{formatTime(message.timestamp)}</div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
-        {partnerTyping && (
-          <div className="typing-indicator">
-            <div className="typing-indicator-bubble">
-              Собеседник печатает...
-            </div>
+        {isPartnerTyping && (
+          <div className="message-bubble partner-message">
+              <TypingIndicator />
           </div>
         )}
+        
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="input-area">
+      <div className="message-input-area">
         <input
           type="text"
+          placeholder="Напишите сообщение..."
+          className="message-input"
           value={messageInput}
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
-          placeholder="Введите сообщение..."
-          className="message-input"
+          disabled={!partnerInfo}
         />
-        <button
+        <button 
           onClick={handleSendMessage}
-          disabled={!messageInput.trim()}
           className="send-button"
+          disabled={!messageInput.trim()}
         >
           <SendIcon />
         </button>
       </div>
     </div>
+    </>
   );
 };
 

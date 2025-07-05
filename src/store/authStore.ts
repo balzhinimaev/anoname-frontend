@@ -12,13 +12,14 @@ interface AuthState {
   error: string | null;
   login: () => Promise<void>;
   logout: () => void;
+  clearError: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   token: null,
   user: null,
   isAuthenticated: false,
-  isLoading: true,
+  isLoading: false,
   error: null,
 
   login: async () => {
@@ -66,16 +67,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Подключаемся к WebSocket после успешной аутентификации
       useSocketStore.getState().connect(token);
 
-    } catch (error: any) {
-      const errorMessage = error.message || 'Ошибка аутентификации';
-      set({ error: errorMessage, isLoading: false, isAuthenticated: false });
-      console.error(errorMessage);
+    } catch (e: any) {
+      console.error('Login failed:', e);
+      set({
+        isAuthenticated: false,
+        isLoading: false,
+        error: e.message || 'Неизвестная ошибка входа',
+      });
     }
   },
 
   logout: () => {
     anonameAPI.setAuthToken(null); // Сбрасываем токен в axios
     useSocketStore.getState().disconnect(); // Отключаемся от сокета при выходе
-    set({ token: null, user: null, isAuthenticated: false });
+    set({
+      token: null,
+      user: null,
+      isAuthenticated: false,
+      error: null,
+    });
   },
+  
+  clearError: () => set({ error: null }),
 })); 

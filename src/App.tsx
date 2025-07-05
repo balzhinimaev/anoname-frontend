@@ -1,65 +1,79 @@
-import React, { useEffect } from 'react';
-import SearchForm from './components/SearchForm';
-import Chat from './components/Chat';
-import './styles/main.scss';
-import { 
-  initTelegramApp,
-  setTelegramTheme,
-  showTelegramAlert
-} from './utils/telegram';
+import { useEffect } from 'react';
 import { useAuthStore } from './store/authStore';
 import { useChatStore } from './store/chatStore';
+import { useSocketStore } from './store/socketStore';
+import Chat from './components/Chat';
+import SearchForm from './components/SearchForm';
+import ErrorDisplay from './components/ErrorDisplay';
+import { setTelegramTheme } from './utils/telegram';
 
-const App: React.FC = () => {
-  const { login, isAuthenticated, isLoading, user, error } = useAuthStore();
-  const { currentChatId } = useChatStore();
+function App() {
+  const { isAuthenticated, login, error: authError, token, isLoading } = useAuthStore();
+  const { partnerInfo, error: chatError } = useChatStore();
+  const { isConnected, connect } = useSocketStore();
 
   useEffect(() => {
-    const initializeApp = async () => {
-      try {
-        initTelegramApp();
-        setTelegramTheme();
-        await login();
-      } catch (e: any) {
-        showTelegramAlert(e.message || 'Произошла критическая ошибка');
-      }
-    };
+    setTelegramTheme();
+    if (!isAuthenticated && !isLoading) {
+      login();
+    }
+  }, [login, isAuthenticated, isLoading]);
 
-    initializeApp();
-  }, [login]);
+  useEffect(() => {
+    if (isAuthenticated && token && !isConnected) {
+      connect(token);
+    }
+  }, [isAuthenticated, token, isConnected, connect]);
 
-  if (isLoading) {
+  const combinedError = authError || chatError;
+
+  if (combinedError) {
     return (
-      <div className="app-loader">
-        <div className="spinner"></div>
-        <p>Подключаемся к серверу...</p>
+      <div className="app">
+        <div className="app-wrapper">
+          <ErrorDisplay
+            message={combinedError}
+            onRetry={login}
+          />
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (isLoading) {
     return (
-      <div className="app-error">
-        <h2>Ошибка</h2>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Попробовать снова</button>
+      <div className="app">
+        <div className="app-wrapper">
+           <div className="app-loader">
+             <div className="spinner" />
+             <p>Подключаемся к серверу...</p>
+           </div>
+        </div>
       </div>
     );
   }
 
   if (!isAuthenticated) {
-    return <div>Не удалось аутентифицироваться.</div>;
+    return (
+      <div className="app">
+        <div className="app-wrapper">
+          <div className="container">
+            <p>Не удалось авторизоваться. Попробуйте перезагрузить приложение.</p>
+          </div>
+        </div>
+      </div>
+    );
   }
-  
+
   return (
     <div className="app">
-      {!currentChatId ? (
-        <SearchForm />
-      ) : (
-        <Chat />
-      )}
+      <div className="app-wrapper">
+        <div className="container">
+          {partnerInfo ? <Chat /> : <SearchForm />}
+        </div>
+      </div>
     </div>
   );
-};
+}
 
 export default App; 
