@@ -74,6 +74,7 @@ export interface WebSocketMessageData {
   isRead: boolean;
   readBy: string[];
   sender: WebSocketUser;
+  replyTo?: string; // ID сообщения, на которое отвечаем
 }
 
 export interface WebSocketChatMessageReceived {
@@ -242,4 +243,241 @@ export interface ApiErrorResponse {
   error: string;
   code?: string;
   details?: any;
+}
+
+// === Дополнительные типы REST API ===
+
+export interface UpdateUserRequest {
+  telegramId: number;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  gender?: 'male' | 'female' | 'other';
+  age?: number;
+}
+
+export interface MatchesResponse {
+  users: Array<{
+    telegramId: number;
+    firstName?: string;
+    age?: number;
+    bio?: string;
+    photos: string[];
+    rating: number;
+  }>;
+  total: number;
+  pages: number;
+}
+
+export interface UpdatePreferencesRequest {
+  gender: 'male' | 'female' | 'any';
+  ageRange: {
+    min: number;
+    max: number;
+  };
+}
+
+export interface PhotoUploadResponse {
+  id: string;
+  url: string;
+  uploadedAt: string;
+}
+
+export interface REST_CreateChatRequest {
+  participants: string[];
+  type?: 'anonymous' | 'permanent';
+}
+
+export interface REST_Chat {
+  _id: string;
+  participants: Array<{
+    _id: string;
+    firstName?: string;
+    photos: string[];
+  }>;
+  lastMessage?: {
+    _id: string;
+    content: string;
+    timestamp: string;
+    sender: string;
+  };
+  type: 'anonymous' | 'permanent';
+  isActive: boolean;
+  unreadCount?: number;
+  createdAt: string;
+  expiresAt?: string;
+}
+
+export interface REST_ChatMessage {
+  _id: string;
+  chatId: string;
+  content: string;
+  timestamp: string;
+  isRead: boolean;
+  readBy: string[];
+  sender: {
+    _id: string;
+    telegramId: number;
+    firstName?: string;
+    photos: string[];
+  } | string;
+}
+
+export interface REST_SendMessageRequest {
+  content: string;
+  sender: string;
+}
+
+export interface REST_MessagesResponse {
+  messages: REST_ChatMessage[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface SubscriptionFeatures {
+  unlimitedSearches: boolean;
+  maxSearchDistance: number;
+  advancedFilters: boolean;
+  priorityInSearch: boolean;
+  dailyHearts: number;
+  dailySuperLikes: number;
+  canSeeWhoLiked: boolean;
+  analytics: boolean;
+  videoChat: boolean;
+}
+
+export interface SubscriptionTier {
+  type: 'basic' | 'premium' | 'gold';
+  price: number;
+  duration: number;
+  features: SubscriptionFeatures;
+}
+
+export interface MonetizationStatus {
+  subscription: {
+    type: 'basic' | 'premium' | 'gold';
+    isActive: boolean;
+    expiresAt?: string;
+    features: SubscriptionFeatures;
+  };
+  currency: {
+    hearts: number;
+    boosts: number;
+    superLikes: number;
+  };
+  limits: {
+    searchesToday: number;
+    maxSearches: number | 'unlimited';
+    resetsAt: string;
+  };
+  analytics: {
+    profileViews: number;
+    matches: number;
+    likes: number;
+  };
+}
+
+export interface MonetizationTiers {
+  basic: SubscriptionTier;
+  premium: SubscriptionTier;
+  gold: SubscriptionTier;
+}
+
+export interface MonetizationItem {
+  type: 'hearts' | 'boosts' | 'superLikes' | 'subscription';
+  amount?: number;
+  subscriptionType?: 'premium' | 'gold';
+  price: number;
+}
+
+export interface MonetizationItems {
+  [key: string]: MonetizationItem;
+}
+
+export interface PurchaseRequest {
+  itemKey: string;
+  paymentData: {
+    payment_id: string;
+    amount: number;
+    currency: string;
+    method: string;
+  };
+}
+
+export interface CanSearchResponse {
+  canSearch: boolean;
+  reason?: string;
+}
+
+export interface SearchLimitsResponse {
+  searchesToday: number;
+  maxSearches: number | 'unlimited';
+  unlimited: boolean;
+  remaining: number;
+  resetsAt: string;
+  subscriptionType: 'basic' | 'premium' | 'gold';
+}
+
+export interface CanUseResponse {
+  canUse: boolean;
+  available: number;
+}
+
+export interface RefillResponse {
+  message: string;
+  added: {
+    hearts: number;
+    superLikes: number;
+  };
+}
+
+export interface SystemMetrics {
+  connections: {
+    current: number;
+    total: number;
+    peak: number;
+  };
+  messages: {
+    total: number;
+    perMinute: number;
+  };
+  searches: {
+    active: number;
+    total: number;
+    successful: number;
+  };
+  latency: {
+    avg: number;
+  };
+  errors: {
+    count: number;
+    lastError: string;
+  };
+  timestamp: string;
+  uptime: number;
+}
+
+export interface HealthCheck {
+  status: 'OK' | 'ERROR';
+  timestamp?: string;
+  services?: {
+    websocket: {
+      status: 'OK' | 'ERROR';
+      activeConnections: number;
+    };
+    search: {
+      status: 'OK' | 'ERROR';
+      activeSearches?: number;
+    };
+  };
+  performance?: {
+    messageLatency: string;
+    messagesPerMinute: number;
+  };
+  errors?: {
+    count: number;
+    lastError: string;
+  };
 } 

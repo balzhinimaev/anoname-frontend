@@ -14,6 +14,9 @@ export interface ChatMessage {
   timestamp: string;
   isFromMe: boolean;
   sender: WebSocketUser;
+  replyTo?: string; // ID сообщения, на которое отвечаем
+  replyToContent?: string; // Содержимое исходного сообщения для отображения
+  replyToSender?: WebSocketUser; // Отправитель исходного сообщения
 }
 
 interface ChatState {
@@ -24,6 +27,7 @@ interface ChatState {
   messages: ChatMessage[];
   isPartnerTyping: boolean;
   error: string | null;
+  replyingTo: ChatMessage | null; // Сообщение, на которое отвечаем
   
   startSearch: (searchData: SearchData) => void;
   cancelSearch: () => void;
@@ -31,6 +35,7 @@ interface ChatState {
   sendMessage: (content: string) => void;
   sendStartTyping: () => void;
   sendStopTyping: () => void;
+  setReplyingTo: (message: ChatMessage | null) => void;
   
   // Внутренние методы для обновления состояния из socketStore
   _handleSearchMatched: (data: WebSocketSearchMatched) => void;
@@ -48,6 +53,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   messages: [],
   isPartnerTyping: false,
   error: null,
+  replyingTo: null,
 
   startSearch: (searchData) => {
     if (!get().isSearching) {
@@ -65,14 +71,23 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const chatId = get().currentChatId;
     if (chatId) {
       websocketService.endChat(chatId, 'user_ended');
-      set({ currentChatId: null, partnerInfo: null, messages: [], isPartnerTyping: false });
+      set({ currentChatId: null, partnerInfo: null, messages: [], isPartnerTyping: false, replyingTo: null });
     }
   },
 
   sendMessage: (content) => {
     const chatId = get().currentChatId;
+    const replyingTo = get().replyingTo;
+    
     if (chatId && content.trim()) {
-      websocketService.sendMessage(chatId, content.trim());
+      // Если отвечаем на сообщение, добавляем информацию о reply
+      if (replyingTo) {
+        websocketService.sendMessage(chatId, content.trim(), replyingTo.id);
+        // Сбрасываем состояние ответа после отправки
+        set({ replyingTo: null });
+      } else {
+        websocketService.sendMessage(chatId, content.trim());
+      }
     }
   },
 
@@ -90,6 +105,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
+  setReplyingTo: (message) => {
+    set({ replyingTo: message });
+  },
+
   _handleSearchMatched: (data) => {
     set({
       isSearching: false,
@@ -97,12 +116,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
       partnerInfo: data.matchedUser,
       messages: [],
       error: null,
+      replyingTo: null,
     });
     websocketService.joinChat(data.matchedUser.chatId);
   },
 
   _handleChatEnded: () => {
-    set({ currentChatId: null, partnerInfo: null, messages: [], isSearching: false, isPartnerTyping: false, searchStats: null, error: null });
+    set({ currentChatId: null, partnerInfo: null, messages: [], isSearching: false, isPartnerTyping: false, searchStats: null, error: null, replyingTo: null });
   },
 
   _addMessage: (message) => {

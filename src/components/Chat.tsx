@@ -10,7 +10,9 @@ const Chat: React.FC = () => {
     sendMessage,
     sendStartTyping,
     sendStopTyping,
-    isPartnerTyping
+    isPartnerTyping,
+    replyingTo,
+    setReplyingTo
   } = useChatStore();
 
   const [messageInput, setMessageInput] = useState('');
@@ -101,6 +103,16 @@ const Chat: React.FC = () => {
     hapticFeedback('warning');
   };
 
+  const handleReplyToMessage = (message: any): void => {
+    setReplyingTo(message);
+    hapticFeedback('light');
+  };
+
+  const handleCancelReply = (): void => {
+    setReplyingTo(null);
+    hapticFeedback('light');
+  };
+
   const formatTime = (timestamp: string): string => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString('ru-RU', { 
@@ -113,9 +125,25 @@ const Chat: React.FC = () => {
     return username.length > 9 ? username.slice(0, 9) + "..." : username;
   };
 
+  const truncateText = (text: string, maxLength: number = 30): string => {
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+
   const SendIcon = () => (
     <svg viewBox="0 0 24 24" fill="currentColor">
       <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+    </svg>
+  );
+
+  const ReplyIcon = () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+      <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" />
+    </svg>
+  );
+
+  const CloseIcon = () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
     </svg>
   );
   
@@ -191,18 +219,45 @@ const Chat: React.FC = () => {
           const isGroupedWithNext = shouldGroupWithNext(index);
           
           return (
-            <div
-              key={message.id}
-              className={`message-bubble ${message.isFromMe ? 'my-message' : 'partner-message'} ${
-                isGroupedWithPrevious ? 'grouped-with-previous' : ''
-              } ${
-                isGroupedWithNext ? 'grouped-with-next' : ''
-              }`}
-            >
-              <div className="message-content-wrapper">
-                <div className="message-content">{message.content}</div>
-                <div className="message-time-spacer"></div>
-                <div className="message-time">{formatTime(message.timestamp)}</div>
+            <div key={message.id} className="message-wrapper">
+              <div
+                className={`message-bubble ${message.isFromMe ? 'my-message' : 'partner-message'} ${
+                  isGroupedWithPrevious ? 'grouped-with-previous' : ''
+                } ${
+                  isGroupedWithNext ? 'grouped-with-next' : ''
+                }`}
+              >
+                {/* Отображение информации о сообщении, на которое отвечаем */}
+                {message.replyTo && message.replyToContent && (
+                  <div className="reply-info">
+                    <div className="reply-bar"></div>
+                    <div className="reply-content">
+                      <div className="reply-sender">
+                        {message.replyToSender?.firstName || "Собеседник"}
+                      </div>
+                      <div className="reply-text">
+                        {truncateText(message.replyToContent)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="message-content-wrapper">
+                  <div className="message-content">{message.content}</div>
+                  <div className="message-time-spacer"></div>
+                  <div className="message-time">{formatTime(message.timestamp)}</div>
+                </div>
+
+                {/* Кнопка ответа */}
+                {!message.isFromMe && (
+                  <button
+                    className="reply-button"
+                    onClick={() => handleReplyToMessage(message)}
+                    title="Ответить"
+                  >
+                    <ReplyIcon />
+                  </button>
+                )}
               </div>
             </div>
           );
@@ -217,23 +272,48 @@ const Chat: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Область ввода сообщения */}
       <div className="message-input-area">
-        <input
-          type="text"
-          placeholder="Напишите сообщение..."
-          className="message-input"
-          value={messageInput}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
-          disabled={!partnerInfo}
-        />
-        <button 
-          onClick={handleSendMessage}
-          className="send-button"
-          disabled={!messageInput.trim()}
-        >
-          <SendIcon />
-        </button>
+        {/* Превью сообщения, на которое отвечаем */}
+        {replyingTo && (
+          <div className="reply-preview">
+            <div className="reply-preview-bar"></div>
+            <div className="reply-preview-content">
+              <div className="reply-preview-sender">
+                {replyingTo.isFromMe ? "Вы" : (replyingTo.sender?.firstName || "Собеседник")}
+              </div>
+              <div className="reply-preview-text">
+                {truncateText(replyingTo.content)}
+              </div>
+            </div>
+            <button
+              className="reply-preview-close"
+              onClick={handleCancelReply}
+              title="Отменить ответ"
+            >
+              <CloseIcon />
+            </button>
+          </div>
+        )}
+
+        <div className="message-input-row">
+          <input
+            type="text"
+            placeholder={replyingTo ? "Ответить..." : "Напишите сообщение..."}
+            className="message-input"
+            value={messageInput}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
+            disabled={!partnerInfo}
+          />
+          <button 
+            onClick={handleSendMessage}
+            className="send-button"
+            disabled={!messageInput.trim()}
+          >
+            <SendIcon />
+          </button>
+        </div>
       </div>
     </div>
     </>

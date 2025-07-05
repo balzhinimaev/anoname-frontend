@@ -180,8 +180,11 @@ export class WebSocketService {
     this.emit(WEBSOCKET_EVENTS.EMIT_CHAT_JOIN, chatId);
   }
 
-  sendMessage(chatId: string, content: string): void {
-    this.emit(WEBSOCKET_EVENTS.EMIT_CHAT_MESSAGE, { chatId, content });
+  sendMessage(chatId: string, content: string, replyTo?: string): void {
+    const messageData = replyTo 
+      ? { chatId, content, replyTo }
+      : { chatId, content };
+    this.emit(WEBSOCKET_EVENTS.EMIT_CHAT_MESSAGE, messageData);
   }
 
   sendStartTyping(chatId: string): void {

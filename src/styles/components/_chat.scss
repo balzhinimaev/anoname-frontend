@@ -270,7 +270,6 @@
   max-width: 75%;
   word-wrap: break-word;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  margin-bottom: $spacing-sm;
   position: relative;
 
   .message-content {
@@ -297,9 +296,6 @@
 
   // Сообщения, которые НЕ первые в группе (сгруппированы с предыдущим)
   &.grouped-with-previous {
-    margin-top: 2px;
-    margin-bottom: 2px;
-    
     &.my-message {
       border-radius: 18px 4px 4px 18px; // Острый угол справа сверху
     }
@@ -311,8 +307,6 @@
 
   // Сообщения, которые НЕ последние в группе (сгруппированы со следующим)
   &.grouped-with-next {
-    margin-bottom: 2px;
-    
     &.my-message {
       border-radius: 18px 18px 18px 18px; // Убираем хвостик справа внизу
     }
@@ -335,8 +329,6 @@
 
   // Первое сообщение в группе (не сгруппировано с предыдущим, но сгруппировано со следующим)
   &:not(.grouped-with-previous).grouped-with-next {
-    margin-top: $spacing-sm;
-    
     &.my-message {
       border-radius: 18px 18px 18px 18px; // Сверху скругленные, снизу без хвостика
     }
@@ -348,8 +340,6 @@
 
   // Последнее сообщение в группе (сгруппировано с предыдущим, но не со следующим)
   &.grouped-with-previous:not(.grouped-with-next) {
-    margin-bottom: $spacing-sm;
-    
     &.my-message {
       border-radius: 18px 4px 4px 18px; // Сверху острый угол справа, снизу хвостик справа
     }
@@ -361,9 +351,6 @@
 
   // Одиночные сообщения (не сгруппированы ни с кем)
   &:not(.grouped-with-previous):not(.grouped-with-next) {
-    margin-top: $spacing-sm;
-    margin-bottom: $spacing-sm;
-    
     &.my-message {
       border-radius: 18px 18px 4px 18px; // Хвостик справа внизу
     }
@@ -435,9 +422,6 @@
 
 // === Message Input Area ===
 .message-input-area {
-  display: flex;
-  align-items: center;
-  gap: $spacing-lg;
   margin-top: $spacing-lg;
   padding: 0;
   border: none;
@@ -534,4 +518,239 @@
     width: 20px;
     height: 20px;
   }
+}
+
+// === Message Wrapper ===
+.message-wrapper {
+  position: relative;
+  margin-bottom: 2px;
+
+  &:hover .reply-button {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+
+  // Если сообщение не сгруппировано с предыдущим, добавляем больший отступ сверху
+  &:has(.message-bubble:not(.grouped-with-previous)) {
+    margin-top: $spacing-sm;
+  }
+
+  // Если сообщение не сгруппировано со следующим, добавляем больший отступ снизу
+  &:has(.message-bubble:not(.grouped-with-next)) {
+    margin-bottom: $spacing-sm;
+  }
+
+  // Для браузеров без поддержки :has() используем альтернативный подход
+  @supports not (selector(:has(*))) {
+    margin-bottom: $spacing-sm;
+  }
+}
+
+// === Reply Button ===
+.reply-button {
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.8);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 122, 255, 0.9);
+  color: white;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: all $transition-normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+  z-index: 10;
+
+  body.tg-dark-theme & {
+    background: rgba(10, 132, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(10, 132, 255, 0.4);
+  }
+
+  &:hover {
+    background: rgba(0, 122, 255, 1);
+    transform: translateY(-50%) scale(1);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+
+    body.tg-dark-theme & {
+      background: rgba(10, 132, 255, 1);
+      box-shadow: 0 4px 12px rgba(10, 132, 255, 0.5);
+    }
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  @include mobile {
+    right: -35px;
+    width: 28px;
+    height: 28px;
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+// === Reply Info (в сообщении) ===
+.reply-info {
+  display: flex;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: $border-radius-md;
+  border-left: 3px solid rgba(0, 122, 255, 0.6);
+
+  body.tg-dark-theme & {
+    background: rgba(255, 255, 255, 0.05);
+    border-left-color: rgba(10, 132, 255, 0.8);
+  }
+
+  .reply-bar {
+    width: 3px;
+    background: rgba(0, 122, 255, 0.6);
+    border-radius: 2px;
+    margin-right: 8px;
+    flex-shrink: 0;
+
+    body.tg-dark-theme & {
+      background: rgba(10, 132, 255, 0.8);
+    }
+  }
+
+  .reply-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .reply-sender {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(0, 122, 255, 0.8);
+    margin-bottom: 2px;
+    line-height: 1.2;
+
+    body.tg-dark-theme & {
+      color: rgba(10, 132, 255, 0.9);
+    }
+  }
+
+  .reply-text {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.6);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    body.tg-dark-theme & {
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+}
+
+// === Reply Preview (в поле ввода) ===
+.reply-preview {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(0, 122, 255, 0.08);
+  border-radius: $border-radius-lg;
+  margin-bottom: 12px;
+  border-left: 4px solid rgba(0, 122, 255, 0.8);
+
+  body.tg-dark-theme & {
+    background: rgba(10, 132, 255, 0.12);
+    border-left-color: rgba(10, 132, 255, 0.9);
+  }
+
+  .reply-preview-bar {
+    width: 4px;
+    height: 40px;
+    background: rgba(0, 122, 255, 0.8);
+    border-radius: 2px;
+    margin-right: 12px;
+    flex-shrink: 0;
+
+    body.tg-dark-theme & {
+      background: rgba(10, 132, 255, 0.9);
+    }
+  }
+
+  .reply-preview-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .reply-preview-sender {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(0, 122, 255, 0.9);
+    margin-bottom: 4px;
+    line-height: 1.2;
+
+    body.tg-dark-theme & {
+      color: rgba(10, 132, 255, 1);
+    }
+  }
+
+  .reply-preview-text {
+    font-size: 14px;
+    color: var(--tg-theme-text-color, #1d1d1f);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    body.tg-dark-theme & {
+      color: var(--tg-theme-text-color, #f2f2f7);
+    }
+  }
+
+  .reply-preview-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 0, 0, 0.6);
+    transition: all $transition-normal;
+    flex-shrink: 0;
+    margin-left: 12px;
+
+    body.tg-dark-theme & {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.15);
+      color: rgba(0, 0, 0, 0.8);
+      transform: scale(1.05);
+
+      body.tg-dark-theme & {
+        background: rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+// === Message Input Row ===
+.message-input-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
 } 
