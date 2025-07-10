@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`components/Chat > renders correctly 1`] = `
+<div>
+  <div
+    class="chat-container"
+  >
+    <div
+      class="chat-header"
+    >
+      Загрузка чата...
+    </div>
+  </div>
+</div>
+`;

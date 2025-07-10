@@ -34,10 +34,14 @@ import {
   WebSocketSearchStats
 } from '../types';
 
-const API_BASE_URL = 'https://anoname.xyz/rest_api/api';
+// Определяем базовый URL в зависимости от среды
+const API_BASE_URL = import.meta.env.DEV 
+  ? '/api/rest_api/api'  // В dev режиме используем прокси
+  : 'https://anoname.xyz/rest_api/api';  // В продакшене прямые запросы
 
 class AnonameAPI {
   private api: AxiosInstance;
+  private authToken: string | null = null;
 
   constructor() {
     this.api = axios.create({
@@ -51,9 +55,8 @@ class AnonameAPI {
     // Интерцептор для добавления токена авторизации
     this.api.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('auth_token');
-        if (token && config.headers) {
-          config.headers.Authorization = `Bearer ${token}`;
+        if (this.authToken && config.headers) {
+          config.headers.Authorization = `Bearer ${this.authToken}`;
         }
         return config;
       },
@@ -66,11 +69,16 @@ class AnonameAPI {
       (error) => {
         if (error.response?.status === 401) {
           // Удаляем невалидный токен
-          localStorage.removeItem('auth_token');
+          this.setAuthToken(null);
         }
         return Promise.reject(error);
       }
     );
+  }
+
+  // Установка или сброс токена авторизации
+  setAuthToken(token: string | null): void {
+    this.authToken = token;
   }
 
   // ======== АУТЕНТИФИКАЦИЯ ========
@@ -81,7 +89,7 @@ class AnonameAPI {
       const response = await this.api.post<REST_AuthResponse>('/auth/register', userData);
       
       if (response.data.token) {
-        localStorage.setItem('auth_token', response.data.token);
+        this.setAuthToken(response.data.token);
       }
       
       return response.data;
@@ -97,7 +105,7 @@ class AnonameAPI {
       const response = await this.api.post<REST_AuthResponse>('/auth/login', loginData);
       
       if (response.data.token) {
-        localStorage.setItem('auth_token', response.data.token);
+        this.setAuthToken(response.data.token);
       }
       
       return response.data;
@@ -111,7 +119,7 @@ class AnonameAPI {
   async logout(): Promise<{ message: string }> {
     try {
       const response = await this.api.post('/auth/logout');
-      localStorage.removeItem('auth_token');
+      this.setAuthToken(null);
       return response.data;
     } catch (error) {
       console.error('Ошибка выхода:', error);
@@ -123,7 +131,7 @@ class AnonameAPI {
   async logoutAll(): Promise<{ message: string }> {
     try {
       const response = await this.api.post('/auth/logout-all');
-      localStorage.removeItem('auth_token');
+      this.setAuthToken(null);
       return response.data;
     } catch (error) {
       console.error('Ошибка выхода из всех сессий:', error);
@@ -158,7 +166,7 @@ class AnonameAPI {
   }
 
   // Получение потенциальных партнеров
-  async getMatches(telegramId: number, limit: number = 20, page: number = 1): Promise<MatchesResponse> {
+  async getMatches(telegramId: number, limit = 20, page = 1): Promise<MatchesResponse> {
     try {
       const response = await this.api.get<MatchesResponse>(`/users/${telegramId}/matches`, {
         params: { limit, page }
@@ -238,7 +246,7 @@ class AnonameAPI {
   }
 
   // Получение сообщений чата
-  async getChatMessages(chatId: string, limit: number = 50, before?: string): Promise<REST_ChatMessage[]> {
+  async getChatMessages(chatId: string, limit = 50, before?: string): Promise<REST_ChatMessage[]> {
     try {
       const params: any = { limit };
       if (before) params.before = before;
@@ -501,7 +509,7 @@ class AnonameAPI {
   }
 
   // Получение истории сообщений (старый метод)
-  async getMessages(chatId: string, page: number = 1, limit: number = 50): Promise<{
+  async getMessages(chatId: string, page = 1, limit = 50): Promise<{
     messages: ChatMessage[];
     total: number;
     page: number;

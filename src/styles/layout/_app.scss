@@ -1,0 +1,231 @@
+// ======================
+// LAYOUT ПРИЛОЖЕНИЯ
+// ======================
+
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+// === App Container (полноэкранный контейнер) ===
+.app {
+  min-height: 100vh;
+  background: var(--tg-theme-bg-color, #ffffff);
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  body.tg-dark-theme & {
+    background: var(--tg-theme-bg-color, #0a0a0a);
+  }
+
+  // На мобильных добавляем небольшой padding для чата
+  @include mobile {
+    padding: 8px;
+    align-items: stretch;
+  }
+}
+
+// === App Wrapper (центрированная карточка) ===
+.app-wrapper {
+  width: 100%;
+  max-width: 480px;
+  min-height: 600px;
+  background: var(--tg-theme-secondary-bg-color, #f1f1f1);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+
+  body.tg-dark-theme & {
+    background: var(--tg-theme-secondary-bg-color, #111111);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  // На мобильных оставляем скругление и тень
+  @include mobile {
+    min-height: calc(100vh - 16px);
+    border-radius: 16px;
+    max-width: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    
+    body.tg-dark-theme & {
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+// === App Loader ===
+.app-loader {
+  @include flex-center;
+  height: 100vh;
+  flex-direction: column;
+  gap: $spacing-xl;
+  color: var(--tg-theme-text-color, #ffffff);
+  text-align: center;
+
+  p {
+    font-size: 16px;
+    opacity: 0.8;
+  }
+}
+
+// === Loading Spinner ===
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid var(--tg-theme-button-color, #ffffff);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// === Container ===
+.container {
+  flex: 1;
+  padding: 0; // Убираем базовый padding
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin: 0; // Убираем auto margin чтобы не было лишних отступов
+
+  // Для обычных страниц (не чат) задаем стандартные отступы
+  &:not(.chat-mode) {
+    padding: $spacing-lg;
+  }
+
+  // Для чата задаем явный отступ в 8px
+  &.chat-mode {
+    padding: 8px;
+    
+    @include mobile {
+      padding: 6px;
+    }
+  }
+}
+
+// === Title ===
+.title {
+  text-align: center;
+  color: var(--tg-theme-text-color, #333333);
+  margin-bottom: $spacing-2xl;
+  margin-top: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  line-height: 1.2;
+
+  body.tg-dark-theme & {
+    color: var(--tg-theme-text-color, #ffffff);
+  }
+}
+
+// === Search Stats ===
+.search-stats {
+  font-size: 12px;
+  text-align: center;
+  color: var(--tg-theme-hint-color, #666666);
+  margin-bottom: $spacing-xl;
+  line-height: 1.4;
+  font-weight: 500;
+
+  body.tg-dark-theme & {
+    color: var(--tg-theme-hint-color, #999999);
+  }
+}
+
+// === Info Boxes ===
+.info-box {
+  padding: $spacing-xl $spacing-2xl;
+  border-radius: $border-radius-lg;
+  margin-bottom: $spacing-xl;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.6);
+  transition: all $transition-normal;
+  color: var(--tg-theme-text-color, #333333);
+  line-height: 1.5;
+
+  body.tg-dark-theme & {
+    background: rgba(20, 20, 20, 0.6);
+    color: var(--tg-theme-text-color, #ffffff);
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    body.tg-dark-theme & {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  &.warning {
+    background: rgba(255, 193, 7, 0.1);
+    color: #856404;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+
+    body.tg-dark-theme & {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffd60a;
+      border: 1px solid rgba(255, 193, 7, 0.4);
+    }
+  }
+}
+
+// === Search Indicator ===
+.searching-indicator {
+  padding: 28px;
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  border-radius: $border-radius-xl;
+  @include flex-center;
+  flex-direction: column;
+  gap: $spacing-xl;
+  color: var(--tg-theme-text-color, #333333);
+  transition: all $transition-normal;
+  margin-bottom: $spacing-xl;
+
+  body.tg-dark-theme & {
+    background: rgba(0, 122, 255, 0.2);
+    border: 1px solid rgba(0, 122, 255, 0.3);
+    color: var(--tg-theme-text-color, #ffffff);
+  }
+
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
+    border-color: rgba(0, 122, 255, 0.3);
+    border-top-color: #007AFF;
+  }
+}
+
+// === Cancel Search Button ===
+.cancel-search-button {
+  padding: $spacing-md $spacing-2xl;
+  border-radius: $border-radius-md;
+  background: linear-gradient(135deg, #ff3b30 0%, #ff6b6b 100%);
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-normal;
+  box-shadow: 0 4px 15px rgba(255, 59, 48, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 59, 48, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+} 

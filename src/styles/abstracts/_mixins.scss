@@ -1,0 +1,249 @@
+// ======================
+// МИКСИНЫ SCSS
+// ======================
+
+@use 'variables' as *;
+
+// --- Glassmorphism Effect ---
+@mixin glassmorphism($bg-light, $bg-dark, $border-opacity: 0.2, $blur: 20px) {
+  background: $bg-light;
+  backdrop-filter: blur($blur);
+  border: 1px solid rgba(255, 255, 255, $border-opacity);
+  
+  body.tg-dark-theme & {
+    background: $bg-dark;
+    border: 1px solid rgba(255, 255, 255, $border-opacity * 0.5);
+  }
+}
+
+// --- Hover Lift Effect ---
+@mixin hover-lift($translate: -2px, $duration: $transition-normal) {
+  transition: all $duration;
+  
+  &:hover:not(:disabled) {
+    transform: translateY($translate);
+  }
+}
+
+// --- Gradient Background ---
+@mixin gradient-bg($gradient-light, $gradient-dark) {
+  background: $gradient-light;
+  
+  body.tg-dark-theme & {
+    background: $gradient-dark;
+  }
+}
+
+// --- Button Base Style ---
+@mixin button-base($padding: $spacing-lg, $border-radius: $border-radius-md) {
+  border: none;
+  padding: $padding;
+  border-radius: $border-radius;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all $transition-normal;
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    
+    &:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+// --- Primary Button ---
+@mixin button-primary($shadow-opacity: 0.3) {
+  @include button-base;
+  background: linear-gradient(135deg, var(--tg-theme-button-color, $accent-color) 0%, rgba(0, 122, 255, 0.8) 100%);
+  color: var(--tg-theme-button-text-color, #ffffff);
+  box-shadow: 0 4px 15px rgba(0, 122, 255, $shadow-opacity);
+  
+  &:hover:not(:disabled) {
+    @include hover-lift;
+    box-shadow: 0 6px 20px rgba(0, 122, 255, $shadow-opacity + 0.1);
+  }
+  
+  &:disabled {
+    background: $disabled-bg !important;
+    color: $disabled-text !important;
+    box-shadow: none !important;
+  }
+}
+
+// --- Secondary Button ---
+@mixin button-secondary($bg-light, $bg-dark) {
+  @include button-base;
+  @include glassmorphism($bg-light, $bg-dark);
+  color: var(--tg-theme-text-color, #ffffff);
+  
+  &:hover:not(:disabled) {
+    @include hover-lift(-1px);
+    background: rgba(255, 255, 255, 0.35);
+    
+    body.tg-dark-theme & {
+      background: rgba(44, 44, 46, 0.6);
+    }
+  }
+}
+
+// --- Input Field ---
+@mixin input-field {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: $border-radius-md;
+  font-size: 16px;
+  @include glassmorphism($input-bg-light, $input-bg-dark, 0.2, 10px);
+  color: var(--tg-theme-text-color, #ffffff);
+  transition: all $transition-normal;
+  
+  &:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(0, 122, 255, 0.5);
+    @include hover-lift(-1px);
+    
+    body.tg-dark-theme & {
+      background: rgba(72, 72, 74, 0.8);
+      border: 1px solid rgba(0, 122, 255, 0.6);
+    }
+  }
+  
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    
+    body.tg-dark-theme & {
+      color: rgba(242, 242, 247, 0.6);
+    }
+  }
+}
+
+// --- Form Container ---
+@mixin form-container {
+  @include glassmorphism($form-bg-light, $form-bg-dark);
+  border-radius: $border-radius-lg;
+  padding: $spacing-2xl;
+  margin: $spacing-md 0;
+  transition: all $transition-normal;
+  
+  &:hover {
+    @include hover-lift;
+    background: rgba(255, 255, 255, 0.3);
+    
+    body.tg-dark-theme & {
+      background: rgba(44, 44, 46, 0.5);
+    }
+  }
+}
+
+// --- Radio/Checkbox Item ---
+@mixin selectable-item($min-width: 120px) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $border-radius-md;
+  @include glassmorphism($radio-bg-light, $radio-bg-dark);
+  transition: all $transition-normal;
+  min-width: $min-width;
+  justify-content: center;
+  font-weight: 500;
+  color: var(--tg-theme-text-color, #ffffff);
+  position: relative;
+  
+  &:hover:not(.selected) {
+    background: rgba(255, 255, 255, 0.25);
+    @include hover-lift(-1px);
+    
+    body.tg-dark-theme & {
+      background: rgba(58, 58, 60, 0.8);
+    }
+  }
+  
+  &.selected {
+    background: linear-gradient(135deg, var(--tg-theme-button-color, $accent-color) 0%, rgba(0, 122, 255, 0.8) 100%) !important;
+    color: var(--tg-theme-button-text-color, #ffffff) !important;
+    border: 1px solid rgba(0, 122, 255, 0.6) !important;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+    
+    &:hover {
+      @include hover-lift;
+      box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4) !important;
+    }
+  }
+}
+
+// --- Chat Message Bubble ---
+@mixin message-bubble($from-me: false) {
+  max-width: 80%;
+  padding: $spacing-md $spacing-lg;
+  border-radius: 18px;
+  word-break: break-word;
+  font-size: 15px;
+  line-height: 1.4;
+  position: relative;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  @if $from-me {
+    background: linear-gradient(135deg, var(--tg-theme-button-color, $accent-color) 0%, rgba(0, 122, 255, 0.8) 100%);
+    color: var(--tg-theme-button-text-color, #ffffff);
+    border-bottom-right-radius: 6px;
+    border: 1px solid rgba(0, 122, 255, 0.3);
+  } @else {
+    background: $message-partner-bg-light;
+    color: var(--tg-theme-text-color, #ffffff);
+    border-bottom-left-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    body.tg-dark-theme & {
+      background: $message-partner-bg-dark;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+// --- Responsive Design ---
+@mixin mobile {
+  @media (max-width: $mobile) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: $tablet) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $desktop) {
+    @content;
+  }
+}
+
+// --- Flexbox Helpers ---
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// --- Text Styles ---
+@mixin text-shadow($type: 'light') {
+  @if $type == 'light' {
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  } @else {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+} 

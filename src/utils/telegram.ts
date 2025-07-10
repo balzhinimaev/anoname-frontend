@@ -1,16 +1,48 @@
-import { TelegramWebApp, TelegramUser } from '../types';
-
-// Утилиты для работы с Telegram WebApp
+import { TelegramUser, TelegramWebApp } from '../types';
 
 /**
  * Возвращает объект Telegram WebApp из глобального window.
  * @returns {TelegramWebApp | null} Объект WebApp или null, если он недоступен.
  */
-export const getTelegram = (): TelegramWebApp | null => {
-  if (typeof window !== 'undefined' && window.Telegram) {
-    return window.Telegram.WebApp;
+function getTelegram(): TelegramWebApp | null {
+  return typeof window !== 'undefined' ? window.Telegram?.WebApp : null;
+}
+
+/**
+ * Получает данные пользователя из Telegram Web App.
+ * @returns {TelegramUser | null} Объект пользователя или null.
+ */
+export const getTelegramUser = (): TelegramUser | null => {
+  const tg = getTelegram();
+  return tg?.initDataUnsafe?.user || null;
+};
+
+/**
+ * Устанавливает CSS переменные на основе темы Telegram.
+ */
+export const setTelegramTheme = (): void => {
+  const tg = getTelegram();
+  if (!tg) return;
+
+  const root = document.documentElement;
+  const theme = tg.themeParams;
+  
+  // Установка основных цветов
+  root.style.setProperty('--tg-theme-bg-color', theme.bg_color || '#ffffff');
+  root.style.setProperty('--tg-theme-text-color', theme.text_color || '#000000');
+  root.style.setProperty('--tg-theme-hint-color', theme.hint_color || '#999999');
+  root.style.setProperty('--tg-theme-button-color', theme.button_color || '#0088cc');
+  root.style.setProperty('--tg-theme-button-text-color', theme.button_text_color || '#ffffff');
+  root.style.setProperty('--tg-theme-secondary-bg-color', theme.secondary_bg_color || '#f8f9fa');
+  
+  if (theme.link_color) {
+    root.style.setProperty('--tg-theme-link-color', theme.link_color);
   }
-  return null;
+  
+  // Установка класса для темной/светлой темы
+  const isDark = tg.colorScheme === 'dark';
+  document.body.classList.toggle('tg-dark-theme', isDark);
+  document.body.classList.toggle('tg-light-theme', !isDark);
 };
 
 export const initTelegramApp = (): TelegramWebApp | null => {
@@ -28,31 +60,9 @@ export const initTelegramApp = (): TelegramWebApp | null => {
   return tg;
 };
 
-export const getTelegramUser = (): TelegramUser | null => {
-  const tg = window.Telegram?.WebApp;
-  return tg?.initDataUnsafe?.user || null;
-};
-
 export const getTelegramInitData = (): string | null => {
   const tg = window.Telegram?.WebApp;
   return tg?.initData || null;
-};
-
-export const setTelegramTheme = (): void => {
-  const tg = window.Telegram?.WebApp;
-  
-  if (!tg) return;
-
-  // Применяем цвета темы Telegram
-  const root = document.documentElement;
-  const theme = tg.themeParams;
-
-  root.style.setProperty('--tg-theme-bg-color', theme.bg_color || '#ffffff');
-  root.style.setProperty('--tg-theme-text-color', theme.text_color || '#000000');
-  root.style.setProperty('--tg-theme-hint-color', theme.hint_color || '#999999');
-  root.style.setProperty('--tg-theme-button-color', theme.button_color || '#0088cc');
-  root.style.setProperty('--tg-theme-button-text-color', theme.button_text_color || '#ffffff');
-  root.style.setProperty('--tg-theme-secondary-bg-color', theme.secondary_bg_color || '#f8f9fa');
 };
 
 export const showTelegramAlert = (message: string, callback?: () => void): void => {

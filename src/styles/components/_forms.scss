@@ -1,0 +1,549 @@
+// ======================
+// КОМПОНЕНТЫ ФОРМ - СОВРЕМЕННЫЙ ДИЗАЙН
+// ======================
+
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+// === Form Container ===
+.form-container {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: $border-radius-xl;
+  padding: $spacing-3xl;
+  margin: $spacing-lg 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: all $transition-normal;
+
+  body.tg-dark-theme & {
+    background: linear-gradient(145deg, rgba(18, 18, 18, 0.15) 0%, rgba(12, 12, 12, 0.1) 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+
+    body.tg-dark-theme & {
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+    }
+  }
+}
+
+// === Search Form ===
+.search-form {
+  width: 100%;
+  max-width: 100%;
+  border: none;
+  outline: none;
+}
+
+// === Fieldset Reset ===
+.search-form-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: none;
+  
+  &:disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+// === Form Groups ===
+.form-group {
+  margin-bottom: $spacing-2xl;
+}
+
+// === Form Labels ===
+.form-label {
+  display: block;
+  margin-bottom: $spacing-lg;
+  font-weight: 700;
+  color: var(--tg-theme-text-color, #1d1d1f);
+  font-size: 17px;
+  letter-spacing: -0.4px;
+
+  body.tg-dark-theme & {
+    color: var(--tg-theme-text-color, #f2f2f7);
+  }
+}
+
+// === Form Inputs ===
+.form-input {
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: $border-radius-lg;
+  font-size: 16px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--tg-theme-text-color, #1d1d1f);
+  border: none;
+  outline: none;
+  transition: all $transition-normal;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+  body.tg-dark-theme & {
+    background: rgba(20, 20, 20, 0.7);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:focus {
+    transform: translateY(-1px);
+    box-shadow: 
+      0 2px 8px rgba(0, 122, 255, 0.2),
+      0 1px 4px rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.95);
+    
+    body.tg-dark-theme & {
+      background: rgba(25, 25, 25, 0.8);
+      box-shadow: 
+        0 2px 8px rgba(0, 122, 255, 0.25),
+        0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  &::placeholder {
+    color: var(--tg-theme-hint-color, #999999);
+    font-weight: 400;
+  }
+}
+
+// === Radio Groups ===
+.radio-group {
+  display: flex;
+  gap: $spacing-lg;
+  flex-wrap: wrap;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 16px 24px;
+  border-radius: $border-radius-lg;
+  background: rgba(255, 255, 255, 0.6);
+  transition: all $transition-normal;
+  min-width: 140px;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--tg-theme-text-color, #1d1d1f);
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  body.tg-dark-theme & {
+    background: rgba(18, 18, 18, 0.7);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  }
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  &:hover:not(.selected) {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    
+    body.tg-dark-theme & {
+      background: rgba(25, 25, 25, 0.8);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  &.selected {
+    background: var(--tg-theme-button-color, #007aff);
+    color: var(--tg-theme-button-text-color, #ffffff);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    
+    body.tg-dark-theme & {
+      box-shadow: 0 2px 6px rgba(10, 132, 255, 0.4);
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 12px rgba(0, 122, 255, 0.4);
+        
+      body.tg-dark-theme & {
+        box-shadow: 0 3px 10px rgba(10, 132, 255, 0.5);
+      }
+    }
+  }
+
+  @include mobile {
+    min-width: 100%;
+  }
+}
+
+// === Checkbox Items ===
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  cursor: pointer;
+  padding: 18px 24px;
+  border-radius: $border-radius-lg;
+  background: rgba(255, 255, 255, 0.6);
+  transition: all $transition-normal;
+  font-weight: 600;
+  color: var(--tg-theme-text-color, #1d1d1f);
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  body.tg-dark-theme & {
+    background: rgba(30, 30, 30, 0.7); // Сделал фон темнее
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+
+    body.tg-dark-theme & {
+      background: rgba(40, 40, 40, 0.8);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  &.checked {
+    background: var(--tg-theme-button-color, #007aff);
+    color: var(--tg-theme-button-text-color, #ffffff);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 4px 16px rgba(0, 122, 255, 0.4),
+      0 2px 8px rgba(0, 0, 0, 0.1);
+
+    body.tg-dark-theme & {
+      box-shadow: 0 4px 16px rgba(10, 132, 255, 0.6);
+    }
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 
+        0 6px 20px rgba(0, 122, 255, 0.5),
+        0 2px 8px rgba(0, 0, 0, 0.1);
+        
+      body.tg-dark-theme & {
+        box-shadow: 
+          0 6px 20px rgba(10, 132, 255, 0.7),
+          0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+
+  input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    accent-color: #ffffff;
+    border-radius: 6px;
+    border: none;
+  }
+}
+
+// === Submit Button ===
+.submit-button {
+  width: 100%;
+  padding: 18px 24px;
+  border-radius: $border-radius-lg;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-top: $spacing-3xl;
+  border: none;
+  cursor: pointer;
+  transition: all $transition-normal;
+  background: linear-gradient(135deg, #007aff 0%, #0056cc 100%);
+  color: #ffffff;
+  box-shadow: 
+    0 4px 16px rgba(0, 122, 255, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 6px 20px rgba(0, 122, 255, 0.5),
+      0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    background: rgba(142, 142, 147, 0.3);
+    color: rgba(142, 142, 147, 0.8);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+}
+
+// === Age Range ===
+.age-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-lg;
+}
+
+// === Search Stats ===
+.search-stats {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(88, 86, 214, 0.08) 100%);
+  padding: 24px;
+  border-radius: $border-radius-xl;
+  margin-bottom: $spacing-2xl;
+  border: none;
+  box-shadow: 
+    0 4px 16px rgba(0, 122, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  body.tg-dark-theme & {
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.12) 0%, rgba(88, 86, 214, 0.12) 100%);
+    box-shadow: 
+      0 4px 16px rgba(0, 122, 255, 0.15),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  h3 {
+    margin: 0 0 20px 0;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--tg-theme-text-color, #1d1d1f);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    body.tg-dark-theme & {
+      color: var(--tg-theme-text-color, #f2f2f7);
+    }
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 16px;
+  border-radius: $border-radius-lg;
+  background: rgba(255, 255, 255, 0.8);
+  transition: all $transition-normal;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  body.tg-dark-theme & {
+    background: rgba(44, 44, 46, 0.8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+
+    body.tg-dark-theme & {
+      background: rgba(44, 44, 46, 0.95);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: rgba(142, 142, 147, 0.8);
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    body.tg-dark-theme & {
+      color: rgba(142, 142, 147, 0.6);
+    }
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 900;
+    color: #007aff;
+    line-height: 1;
+  }
+}
+
+// === Searching Container ===
+.searching-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-3xl;
+  text-align: center;
+}
+
+.welcome-message {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: $spacing-2xl;
+  color: var(--tg-theme-text-color, #1d1d1f);
+  letter-spacing: -0.5px;
+
+  body.tg-dark-theme & {
+    color: var(--tg-theme-text-color, #f2f2f7);
+  }
+}
+
+// === Search Controls ===
+.search-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: $spacing-2xl;
+  width: 100%;
+  max-width: 300px;
+}
+
+// === Searching Indicator ===
+.searching-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.1) 0%, rgba(88, 86, 214, 0.1) 100%);
+  border-radius: $border-radius-lg;
+  color: var(--tg-theme-text-color, #1d1d1f);
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  box-shadow: 
+    0 4px 16px rgba(0, 122, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  body.tg-dark-theme & {
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.15) 0%, rgba(88, 86, 214, 0.15) 100%);
+    color: var(--tg-theme-text-color, #f2f2f7);
+    box-shadow: 
+      0 4px 16px rgba(0, 122, 255, 0.2),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(0, 122, 255, 0.2);
+    border-top: 3px solid #007aff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+// === Cancel Search Button ===
+.cancel-search-button {
+  padding: 18px 24px;
+  border-radius: $border-radius-lg;
+  background: linear-gradient(135deg, #ff3b30 0%, #d70015 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-normal;
+  box-shadow: 
+    0 4px 16px rgba(255, 59, 48, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 6px 20px rgba(255, 59, 48, 0.5),
+      0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// === Compact Stats ===
+.compact-stats {
+  font-size: 11px;
+  color: rgba(142, 142, 147, 0.8);
+  margin-bottom: 8px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  text-align: right;
+  
+  body.tg-dark-theme & {
+    color: rgba(142, 142, 147, 0.7);
+  }
+}
+
+// === Mobile Adaptations ===
+@include mobile {
+  .form-container {
+    padding: $spacing-2xl;
+    margin: $spacing-sm 0;
+  }
+  
+  .radio-group {
+    flex-direction: column;
+  }
+  
+  .radio-item {
+    min-width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-item {
+    padding: 16px 12px;
+    
+    .stat-label {
+      font-size: 11px;
+    }
+    
+    .stat-value {
+      font-size: 20px;
+    }
+  }
+
+  .search-controls {
+    gap: 16px;
+  }
+
+  .searching-indicator {
+    padding: 20px;
+    font-size: 15px;
+    
+    .spinner {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .cancel-search-button {
+    padding: 16px 20px;
+    font-size: 15px;
+  }
+
+  .welcome-message {
+    font-size: 24px;
+  }
+} 
