@@ -10,47 +10,40 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: calc(100vh - 10px);
+  height: 100%;
   max-height: none;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: $spacing-2xl;
-  margin: $spacing-lg 0;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border: none;
+  background: var(--tg-theme-bg-color, #ffffff);
+  border-radius: 12px;
+  padding: $spacing-lg;
+  margin: 0;
   transition: all $transition-normal;
-  overflow: hidden;
+  position: relative;
 
   body.tg-dark-theme & {
-    background: linear-gradient(145deg, rgba(44, 44, 46, 0.15) 0%, rgba(28, 28, 30, 0.1) 100%);
-    box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.5),
-      0 4px 16px rgba(0, 0, 0, 0.3);
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-      0 12px 40px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.25);
-
-    body.tg-dark-theme & {
-      box-shadow: 
-        0 12px 40px rgba(0, 0, 0, 0.6),
-        0 6px 20px rgba(0, 0, 0, 0.4);
-      transform: translateY(-2px);
-    }
+    background: var(--tg-theme-bg-color, #0d0d0d);
   }
 
   @include mobile {
-    height: 100vh;
-    border-radius: 0;
+    height: 100%;
+    border-radius: 10px;
     border: none;
     margin: 0;
-    padding: $spacing-lg;
+    padding: $spacing-md;
+  }
+}
+
+// === Highlight Overlay ===
+.highlight-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: $border-radius-lg;
+  animation: highlight-fade 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  
+  body.tg-dark-theme & {
+    animation: highlight-fade-dark 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
 }
 
@@ -62,14 +55,11 @@
   padding: 12px 16px;
   margin-bottom: $spacing-lg;
   border-radius: $border-radius-lg;
-  background: rgba(255, 255, 255, 0.8);
-  border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: var(--tg-theme-secondary-bg-color, #f1f1f1);
   flex-shrink: 0;
 
   body.tg-dark-theme & {
-    background: rgba(44, 44, 46, 0.8);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background: var(--tg-theme-secondary-bg-color, #161616);
   }
 
   &-title {
@@ -150,14 +140,37 @@
   }
 }
 
-.user-age {
+.user-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 10px;
   font-weight: 500;
-  color: rgba(142, 142, 147, 0.8);
   line-height: 1.2;
+}
+
+.user-age {
+  color: rgba(142, 142, 147, 0.8);
 
   body.tg-dark-theme & {
     color: rgba(142, 142, 147, 0.7);
+  }
+}
+
+.user-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #ff9500;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: rgba(255, 149, 0, 0.1);
+  font-size: 9px;
+
+  body.tg-dark-theme & {
+    color: #ff9f0a;
+    background: rgba(255, 159, 10, 0.15);
   }
 }
 
@@ -178,16 +191,22 @@
   font-weight: 600;
   cursor: pointer;
   transition: all $transition-normal;
-  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3);
+  box-shadow: 0 1px 4px rgba(255, 59, 48, 0.2);
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.4);
+    box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3);
   }
 
   &:active {
     transform: translateY(0);
   }
+}
+
+.chat-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .chat-menu-button {
@@ -201,31 +220,134 @@
   font-weight: 600;
   cursor: pointer;
   transition: all $transition-normal;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
 
   body.tg-dark-theme & {
-    background: rgba(44, 44, 46, 0.8);
+    background: rgba(20, 20, 20, 0.8);
     color: var(--tg-theme-text-color, #f2f2f7);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     background: rgba(255, 255, 255, 0.95);
 
     body.tg-dark-theme & {
-      background: rgba(44, 44, 46, 0.95);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      background: rgba(25, 25, 25, 0.95);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
   }
 
   &:active {
     transform: translateY(0);
+  }
+}
+
+.chat-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  min-width: 200px;
+  background: var(--tg-theme-bg-color, #ffffff);
+  border-radius: $border-radius-lg;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 4px;
+  padding: 8px 0;
+  animation: menu-fade-in 0.2s ease-out;
+  backdrop-filter: blur(20px);
+
+  body.tg-dark-theme & {
+    background: var(--tg-theme-bg-color, #111111);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  @include mobile {
+    min-width: 180px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.chat-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all $transition-normal;
+  color: var(--tg-theme-text-color, #1d1d1f);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+
+  body.tg-dark-theme & {
+    color: var(--tg-theme-text-color, #f2f2f7);
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    
+    body.tg-dark-theme & {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  &:active {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(0.98);
+    
+    body.tg-dark-theme & {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &.danger {
+    color: #ff3b30;
+    
+    body.tg-dark-theme & {
+      color: #ff453a;
+    }
+    
+    &:hover {
+      background: rgba(255, 59, 48, 0.1);
+      
+      body.tg-dark-theme & {
+        background: rgba(255, 69, 58, 0.1);
+      }
+    }
+  }
+
+  .menu-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+}
+
+.chat-menu-divider {
+  height: 1px;
+  background: var(--tg-theme-hint-color, rgba(0, 0, 0, 0.1));
+  margin: 8px 0;
+  
+  body.tg-dark-theme & {
+    background: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.1));
+  }
+}
+
+@keyframes menu-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -279,86 +401,53 @@
     font-weight: 400;
   }
 
-  // Базовые стили для всех сообщений (одиночные)
+  // Базовые стили для всех сообщений
   &.my-message {
     align-self: flex-end;
     background: var(--tg-theme-button-color, $accent-color);
     color: var(--tg-theme-button-text-color, #ffffff);
-    border-radius: 18px 18px 4px 18px; // Одиночное сообщение: хвостик справа внизу
+    border-radius: 18px; // Одинаковое скругление всех углов
   }
 
   &.partner-message {
     align-self: flex-start;
-    @include glassmorphism($message-partner-bg-light, $message-partner-bg-dark);
-    color: var(--tg-theme-text-color, #ffffff);
-    border-radius: 18px 18px 18px 4px; // Одиночное сообщение: хвостик слева внизу
-  }
-
-  // Сообщения, которые НЕ первые в группе (сгруппированы с предыдущим)
-  &.grouped-with-previous {
-    &.my-message {
-      border-radius: 18px 4px 4px 18px; // Острый угол справа сверху
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--tg-theme-text-color, #1d1d1f);
+    border-radius: 18px; // Одинаковое скругление всех углов
+    cursor: pointer; // Показываем, что с сообщением можно взаимодействовать
+    
+    body.tg-dark-theme & {
+      background: rgba(18, 18, 18, 0.9);
+      color: var(--tg-theme-text-color, #f2f2f7);
     }
     
-    &.partner-message {
-      border-radius: 4px 18px 18px 4px; // Острый угол слева сверху
-    }
-  }
-
-  // Сообщения, которые НЕ последние в группе (сгруппированы со следующим)
-  &.grouped-with-next {
-    &.my-message {
-      border-radius: 18px 18px 18px 18px; // Убираем хвостик справа внизу
-    }
-    
-    &.partner-message {
-      border-radius: 18px 18px 18px 18px; // Убираем хвостик слева внизу
+    &:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      
+      body.tg-dark-theme & {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      }
     }
   }
 
-  // Сообщения в середине группы (сгруппированы И с предыдущим, И со следующим)
-  &.grouped-with-previous.grouped-with-next {
-    &.my-message {
-      border-radius: 18px 4px 18px 18px; // Острый угол сверху справа, без хвостика внизу
-    }
+  // Базовая анимация для всех сообщений - только для возврата
+  transition: transform 0.15s ease-out;
+  
+  // Стили для состояния swipe
+  &.swiping {
+    transition: none !important; // Убираем анимацию при активном swipe для отзывчивости
+    user-select: none; // Отключаем выделение текста
     
     &.partner-message {
-      border-radius: 4px 18px 18px 18px; // Острый угол сверху слева, без хвостика внизу
+      background: rgba(0, 122, 255, 0.1); // Легкий подсвет при swipe
+      
+      body.tg-dark-theme & {
+        background: rgba(10, 132, 255, 0.15);
+      }
     }
   }
 
-  // Первое сообщение в группе (не сгруппировано с предыдущим, но сгруппировано со следующим)
-  &:not(.grouped-with-previous).grouped-with-next {
-    &.my-message {
-      border-radius: 18px 18px 18px 18px; // Сверху скругленные, снизу без хвостика
-    }
-    
-    &.partner-message {
-      border-radius: 18px 18px 18px 18px; // Сверху скругленные, снизу без хвостика
-    }
-  }
 
-  // Последнее сообщение в группе (сгруппировано с предыдущим, но не со следующим)
-  &.grouped-with-previous:not(.grouped-with-next) {
-    &.my-message {
-      border-radius: 18px 4px 4px 18px; // Сверху острый угол справа, снизу хвостик справа
-    }
-    
-    &.partner-message {
-      border-radius: 4px 18px 18px 4px; // Сверху острый угол слева, снизу хвостик слева
-    }
-  }
-
-  // Одиночные сообщения (не сгруппированы ни с кем)
-  &:not(.grouped-with-previous):not(.grouped-with-next) {
-    &.my-message {
-      border-radius: 18px 18px 4px 18px; // Хвостик справа внизу
-    }
-    
-    &.partner-message {
-      border-radius: 18px 18px 18px 4px; // Хвостик слева внизу
-    }
-  }
 }
 
 .message-content-wrapper {
@@ -420,6 +509,66 @@
   100% { opacity: 0.2; }
 }
 
+@keyframes highlight-fade {
+  0% { 
+    background: linear-gradient(90deg, 
+      rgba(0, 122, 255, 0.3) 0%, 
+      rgba(0, 122, 255, 0.2) 50%, 
+      rgba(0, 122, 255, 0.3) 100%
+    );
+    opacity: 1;
+    transform: scale(1.01);
+  }
+  15% { 
+    background: linear-gradient(90deg, 
+      rgba(0, 122, 255, 0.3) 0%, 
+      rgba(0, 122, 255, 0.2) 50%, 
+      rgba(0, 122, 255, 0.3) 100%
+    );
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% { 
+    background: linear-gradient(90deg, 
+      rgba(0, 122, 255, 0.3) 0%, 
+      rgba(0, 122, 255, 0.2) 50%, 
+      rgba(0, 122, 255, 0.3) 100%
+    );
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes highlight-fade-dark {
+  0% { 
+    background: linear-gradient(90deg, 
+      rgba(10, 132, 255, 0.25) 0%, 
+      rgba(10, 132, 255, 0.15) 50%, 
+      rgba(10, 132, 255, 0.25) 100%
+    );
+    opacity: 1;
+    transform: scale(1.01);
+  }
+  15% { 
+    background: linear-gradient(90deg, 
+      rgba(10, 132, 255, 0.25) 0%, 
+      rgba(10, 132, 255, 0.15) 50%, 
+      rgba(10, 132, 255, 0.25) 100%
+    );
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% { 
+    background: linear-gradient(90deg, 
+      rgba(10, 132, 255, 0.25) 0%, 
+      rgba(10, 132, 255, 0.15) 50%, 
+      rgba(10, 132, 255, 0.25) 100%
+    );
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
 // === Message Input Area ===
 .message-input-area {
   margin-top: $spacing-lg;
@@ -434,21 +583,15 @@
   border-radius: $border-radius-lg;
   font-size: 16px;
   font-weight: 500;
-  background: rgba(255, 255, 255, 0.8);
-  color: #1d1d1f;
-  border: none;
+  background: var(--tg-theme-secondary-bg-color, #f1f1f1);
+  color: var(--tg-theme-text-color, #000000);
+  border: 1px solid var(--tg-theme-hint-color, rgba(0, 0, 0, 0.1));
   outline: none;
   transition: all $transition-normal;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 
   body.tg-dark-theme & {
-    background: rgba(58, 58, 60, 0.8);
-    color: #f2f2f7;
-    box-shadow: 
-      0 2px 8px rgba(0, 0, 0, 0.3),
-      0 1px 4px rgba(0, 0, 0, 0.2);
+    background: var(--tg-theme-secondary-bg-color, #111111);
+    color: var(--tg-theme-text-color, #ffffff);
   }
   
   &:focus {
@@ -511,7 +654,7 @@
     color: rgba(142, 142, 147, 0.8);
     cursor: not-allowed;
     transform: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
   svg {
@@ -524,6 +667,11 @@
 .message-wrapper {
   position: relative;
   margin-bottom: 2px;
+  overflow: visible; // Позволяем дочерним элементам выходить за границы
+  z-index: 1; // Базовый z-index
+  transition: background-color 0.3s ease-out;
+  display: flex; // Делаем flex контейнером для корректного выравнивания
+  flex-direction: column;
 
   &:hover .reply-button {
     opacity: 1;
@@ -543,6 +691,48 @@
   // Для браузеров без поддержки :has() используем альтернативный подход
   @supports not (selector(:has(*))) {
     margin-bottom: $spacing-sm;
+  }
+
+
+}
+
+// === Swipe Reply Icon ===
+.swipe-reply-icon {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0, 122, 255, 1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+
+  body.tg-dark-theme & {
+    background: rgba(10, 132, 255, 1);
+    box-shadow: 0 1px 4px rgba(10, 132, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  @include mobile {
+    width: 28px;
+    height: 28px;
+    
+    svg {
+      width: 14px;
+      height: 14px;
+    }
   }
 }
 
@@ -564,22 +754,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+  box-shadow: 0 1px 4px rgba(0, 122, 255, 0.2);
   z-index: 10;
+  pointer-events: none; // Скрываем кнопку от кликов
+  visibility: hidden;   // Полностью скрываем кнопку
 
   body.tg-dark-theme & {
     background: rgba(10, 132, 255, 0.9);
-    box-shadow: 0 2px 8px rgba(10, 132, 255, 0.4);
+    box-shadow: 0 1px 3px rgba(10, 132, 255, 0.3);
   }
 
   &:hover {
     background: rgba(0, 122, 255, 1);
     transform: translateY(-50%) scale(1);
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+    box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3);
 
     body.tg-dark-theme & {
       background: rgba(10, 132, 255, 1);
-      box-shadow: 0 4px 12px rgba(10, 132, 255, 0.5);
+      box-shadow: 0 2px 5px rgba(10, 132, 255, 0.4);
     }
   }
 
@@ -591,8 +783,10 @@
     right: -35px;
     width: 28px;
     height: 28px;
-    opacity: 1;
+    opacity: 0;
     transform: translateY(-50%) scale(1);
+    pointer-events: none;
+    visibility: hidden;
   }
 }
 
@@ -604,10 +798,27 @@
   background: rgba(0, 0, 0, 0.05);
   border-radius: $border-radius-md;
   border-left: 3px solid rgba(0, 122, 255, 0.6);
+  cursor: pointer;
+  transition: all $transition-normal;
 
   body.tg-dark-theme & {
     background: rgba(255, 255, 255, 0.05);
     border-left-color: rgba(10, 132, 255, 0.8);
+  }
+
+  &:hover {
+    background: rgba(0, 122, 255, 0.1);
+    border-left-color: rgba(0, 122, 255, 0.8);
+    transform: translateY(-1px);
+
+    body.tg-dark-theme & {
+      background: rgba(10, 132, 255, 0.15);
+      border-left-color: rgba(10, 132, 255, 1);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   .reply-bar {
@@ -753,4 +964,5 @@
   display: flex;
   align-items: center;
   gap: $spacing-lg;
-} 
+}
+

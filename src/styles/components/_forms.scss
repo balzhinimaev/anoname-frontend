@@ -12,29 +12,20 @@
   border-radius: $border-radius-xl;
   padding: $spacing-3xl;
   margin: $spacing-lg 0;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   transition: all $transition-normal;
 
   body.tg-dark-theme & {
-    background: linear-gradient(145deg, rgba(44, 44, 46, 0.15) 0%, rgba(28, 28, 30, 0.1) 100%);
-    box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.5),
-      0 4px 16px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, rgba(18, 18, 18, 0.15) 0%, rgba(12, 12, 12, 0.1) 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-      0 12px 40px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 
     body.tg-dark-theme & {
-      box-shadow: 
-        0 12px 40px rgba(0, 0, 0, 0.6),
-        0 6px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
     }
   }
 }
@@ -87,45 +78,35 @@
   font-size: 16px;
   font-weight: 500;
   background: rgba(255, 255, 255, 0.8);
-  color: #1d1d1f;
+  color: var(--tg-theme-text-color, #1d1d1f);
   border: none;
   outline: none;
   transition: all $transition-normal;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 
   body.tg-dark-theme & {
-    background: rgba(58, 58, 60, 0.8);
-    color: #f2f2f7;
-    box-shadow: 
-      0 2px 8px rgba(0, 0, 0, 0.3),
-      0 1px 4px rgba(0, 0, 0, 0.2);
+    background: rgba(20, 20, 20, 0.7);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   }
   
   &:focus {
     transform: translateY(-1px);
     box-shadow: 
-      0 4px 16px rgba(0, 122, 255, 0.25),
-      0 2px 8px rgba(0, 0, 0, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      0 2px 8px rgba(0, 122, 255, 0.2),
+      0 1px 4px rgba(0, 0, 0, 0.05);
     background: rgba(255, 255, 255, 0.95);
     
     body.tg-dark-theme & {
-      background: rgba(58, 58, 60, 0.95);
+      background: rgba(25, 25, 25, 0.8);
       box-shadow: 
-        0 4px 16px rgba(0, 122, 255, 0.3),
-        0 2px 8px rgba(0, 0, 0, 0.3);
+        0 2px 8px rgba(0, 122, 255, 0.25),
+        0 1px 3px rgba(0, 0, 0, 0.15);
     }
   }
   
   &::placeholder {
-    color: rgba(142, 142, 147, 0.8);
+    color: var(--tg-theme-hint-color, #999999);
     font-weight: 400;
-    
-    body.tg-dark-theme & {
-      color: rgba(142, 142, 147, 0.6);
-    }
   }
 }
 
@@ -148,14 +129,13 @@
   min-width: 140px;
   justify-content: center;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--tg-theme-text-color, #1d1d1f);
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
   body.tg-dark-theme & {
-    background: rgba(58, 58, 60, 0.6);
-    color: #f2f2f7;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background: rgba(18, 18, 18, 0.7);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   }
 
   input[type="radio"] {
@@ -163,42 +143,32 @@
   }
 
   &:hover:not(.selected) {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     background: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     
     body.tg-dark-theme & {
-      background: rgba(58, 58, 60, 0.8);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      background: rgba(25, 25, 25, 0.8);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     }
   }
   
   &.selected {
-    background: linear-gradient(135deg, #007aff 0%, #0056cc 100%);
-    color: #ffffff;
-    transform: translateY(-2px);
-    box-shadow: 
-      0 4px 16px rgba(0, 122, 255, 0.4),
-      0 2px 8px rgba(0, 0, 0, 0.1);
-    border: none;
+    background: var(--tg-theme-button-color, #007aff);
+    color: var(--tg-theme-button-text-color, #ffffff);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
     
     body.tg-dark-theme & {
-      background: linear-gradient(135deg, #0a84ff 0%, #007aff 100%);
-      box-shadow: 
-        0 4px 16px rgba(10, 132, 255, 0.6),
-        0 2px 8px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 6px rgba(10, 132, 255, 0.4);
     }
     
     &:hover {
-      transform: translateY(-3px);
-      box-shadow: 
-        0 6px 20px rgba(0, 122, 255, 0.5),
-        0 2px 8px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 3px 12px rgba(0, 122, 255, 0.4);
         
       body.tg-dark-theme & {
-        box-shadow: 
-          0 6px 20px rgba(10, 132, 255, 0.7),
-          0 2px 8px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 3px 10px rgba(10, 132, 255, 0.5);
       }
     }
   }
@@ -219,14 +189,13 @@
   background: rgba(255, 255, 255, 0.6);
   transition: all $transition-normal;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--tg-theme-text-color, #1d1d1f);
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
   body.tg-dark-theme & {
-    background: rgba(58, 58, 60, 0.6);
-    color: #f2f2f7;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background: rgba(30, 30, 30, 0.7); // Сделал фон темнее
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   }
 
   &:hover {
@@ -235,24 +204,21 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 
     body.tg-dark-theme & {
-      background: rgba(58, 58, 60, 0.8);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      background: rgba(40, 40, 40, 0.8);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     }
   }
 
   &.checked {
-    background: linear-gradient(135deg, #007aff 0%, #0056cc 100%);
-    color: #ffffff;
+    background: var(--tg-theme-button-color, #007aff);
+    color: var(--tg-theme-button-text-color, #ffffff);
     transform: translateY(-2px);
     box-shadow: 
       0 4px 16px rgba(0, 122, 255, 0.4),
       0 2px 8px rgba(0, 0, 0, 0.1);
 
     body.tg-dark-theme & {
-      background: linear-gradient(135deg, #0a84ff 0%, #007aff 100%);
-      box-shadow: 
-        0 4px 16px rgba(10, 132, 255, 0.6),
-        0 2px 8px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 16px rgba(10, 132, 255, 0.6);
     }
 
     &:hover {

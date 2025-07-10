@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useAuthStore } from './store/authStore';
 import { useChatStore } from './store/chatStore';
 import { useSocketStore } from './store/socketStore';
@@ -14,6 +14,19 @@ function App() {
 
   useEffect(() => {
     setTelegramTheme();
+    
+    // Получаем доступ к объекту Telegram WebApp
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      // Устанавливаем цвет фона
+      // Можно использовать разные цвета для светлой и темной тем
+      if (tg.colorScheme === 'dark') {
+        tg.setBackgroundColor('#000000');
+      } else {
+        tg.setBackgroundColor('#f0f2f5');
+      }
+    }
+
     if (!isAuthenticated && !isLoading) {
       login();
     }
@@ -68,7 +81,7 @@ function App() {
   return (
     <div className="app">
       <div className="app-wrapper">
-        <div className="container">
+        <div className={`container ${partnerInfo ? 'chat-mode' : ''}`}>
           {partnerInfo ? <Chat /> : <SearchForm />}
         </div>
       </div>

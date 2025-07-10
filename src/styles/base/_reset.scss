@@ -39,13 +39,13 @@ body {
   font-size: 14px;
 
   &.tg-dark-theme {
-    background: var(--tg-theme-bg-color, #1c1c1e);
-    color: var(--tg-theme-text-color, $text-primary-dark);
+    background: var(--tg-theme-bg-color);
+    color: var(--tg-theme-text-color);
   }
 
   @media (prefers-color-scheme: dark) {
-    background: var(--tg-theme-bg-color, #1a1a1a);
-    color: var(--tg-theme-text-color, #ffffff);
+    background: var(--tg-theme-bg-color);
+    color: var(--tg-theme-text-color);
   }
 }
 

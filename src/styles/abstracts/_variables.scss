@@ -9,9 +9,9 @@ $desktop: 1200px;
 
 // --- Gradients ---
 $app-gradient-light: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-$app-gradient-dark: linear-gradient(135deg, #2c3e50 0%, #4a6741 100%);
+$app-gradient-dark: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
 $app-gradient-alt-light: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-$app-gradient-alt-dark: linear-gradient(135deg, #232526 0%, #414345 100%);
+$app-gradient-alt-dark: linear-gradient(135deg, #111111 0%, #1c1c1c 100%);
 
 // --- Colors Light Theme ---
 $card-bg-light: rgba(255, 255, 255, 0.25);
@@ -26,25 +26,25 @@ $warning-bg-light: rgba(255, 249, 230, 0.9);
 $warning-text-light: #b8860b;
 
 // --- Colors Dark Theme ---
-$card-bg-dark: rgba(44, 44, 46, 0.4);
-$card-border-dark: rgba(255, 255, 255, 0.1);
+$card-bg-dark: rgba(25, 25, 25, 0.4);
+$card-border-dark: rgba(255, 255, 255, 0.05);
 $text-primary-dark: #f2f2f7;
 $text-secondary-dark: #8e8e93;
-$form-bg-dark: rgba(44, 44, 46, 0.3);
-$input-bg-dark: rgba(58, 58, 60, 0.6);
-$radio-bg-dark: rgba(58, 58, 60, 0.6);
-$checkbox-bg-dark: rgba(58, 58, 60, 0.6);
+$form-bg-dark: rgba(18, 18, 18, 0.3);
+$input-bg-dark: rgba(30, 30, 30, 0.6);
+$radio-bg-dark: rgba(30, 30, 30, 0.6);
+$checkbox-bg-dark: rgba(30, 30, 30, 0.6);
 $warning-bg-dark: rgba(61, 41, 20, 0.9);
 $warning-text-dark: #ffd60a;
 
 // --- Chat Colors ---
 $chat-bg-light: rgba(255, 255, 255, 0.95);
-$chat-bg-dark: rgba(28, 28, 30, 0.95);
+$chat-bg-dark: rgba(15, 15, 15, 0.95);
 $message-my-bg: #007aff;
 $message-partner-bg-light: rgba(255, 255, 255, 0.2);
-$message-partner-bg-dark: rgba(58, 58, 60, 0.6);
+$message-partner-bg-dark: rgba(35, 35, 35, 0.6);
 $input-area-bg-light: rgba(255, 255, 255, 0.1);
-$input-area-bg-dark: rgba(28, 28, 30, 0.8);
+$input-area-bg-dark: rgba(12, 12, 12, 0.8);
 
 // --- Common Colors ---
 $accent-color: #007aff;

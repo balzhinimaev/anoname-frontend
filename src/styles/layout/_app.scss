@@ -8,9 +8,7 @@
 // === App Container (полноэкранный контейнер) ===
 .app {
   min-height: 100vh;
-  background: linear-gradient(135deg, 
-    var(--tg-theme-bg-color, #667eea) 0%, 
-    var(--tg-theme-secondary-bg-color, #764ba2) 100%);
+  background: var(--tg-theme-bg-color, #ffffff);
   padding: 20px;
   box-sizing: border-box;
   display: flex;
@@ -18,14 +16,12 @@
   justify-content: center;
 
   body.tg-dark-theme & {
-    background: linear-gradient(135deg, 
-      var(--tg-theme-bg-color, #2c3e50) 0%, 
-      var(--tg-theme-secondary-bg-color, #34495e) 100%);
+    background: var(--tg-theme-bg-color, #0a0a0a);
   }
 
-  // На мобильных убираем padding
+  // На мобильных добавляем небольшой padding для чата
   @include mobile {
-    padding: 0;
+    padding: 8px;
     align-items: stretch;
   }
 }
@@ -35,28 +31,29 @@
   width: 100%;
   max-width: 480px;
   min-height: 600px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
+  background: var(--tg-theme-secondary-bg-color, #f1f1f1);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  padding: 0;
 
   body.tg-dark-theme & {
-    background: rgba(28, 28, 30, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    background: var(--tg-theme-secondary-bg-color, #111111);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
-  // На мобильных растягиваем на весь экран
+  // На мобильных оставляем скругление и тень
   @include mobile {
-    min-height: 100vh;
-    border-radius: 0;
-    border: none;
+    min-height: calc(100vh - 16px);
+    border-radius: 16px;
     max-width: none;
-    box-shadow: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    
+    body.tg-dark-theme & {
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
   }
 }
 
@@ -93,15 +90,24 @@
 // === Container ===
 .container {
   flex: 1;
-  padding: $spacing-xl;
+  padding: 0; // Убираем базовый padding
   display: flex;
   flex-direction: column;
   max-width: 100%;
-  margin: 0 auto;
+  margin: 0; // Убираем auto margin чтобы не было лишних отступов
 
-  // Специальный класс для чата - без padding
+  // Для обычных страниц (не чат) задаем стандартные отступы
+  &:not(.chat-mode) {
+    padding: $spacing-lg;
+  }
+
+  // Для чата задаем явный отступ в 8px
   &.chat-mode {
-    padding: 0;
+    padding: 8px;
+    
+    @include mobile {
+      padding: 6px;
+    }
   }
 }
 
@@ -142,23 +148,21 @@
   margin-bottom: $spacing-xl;
   text-align: center;
   background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.1);
   transition: all $transition-normal;
   color: var(--tg-theme-text-color, #333333);
   line-height: 1.5;
 
   body.tg-dark-theme & {
-    background: rgba(44, 44, 46, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(20, 20, 20, 0.6);
     color: var(--tg-theme-text-color, #ffffff);
   }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
     body.tg-dark-theme & {
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
   }
 

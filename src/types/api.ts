@@ -23,6 +23,7 @@ export interface WebSocketMatchedUser {
   telegramId: string;
   gender: 'male' | 'female';
   age: number;
+  rating: number;
   chatId: string;
 }
 
@@ -55,6 +56,7 @@ export interface WebSocketSearchStats {
 export interface WebSocketChatMessage {
   chatId: string;
   content: string;
+  replyTo?: string; // ID сообщения, на которое отвечаем
 }
 
 export interface WebSocketUser {
@@ -74,7 +76,11 @@ export interface WebSocketMessageData {
   isRead: boolean;
   readBy: string[];
   sender: WebSocketUser;
-  replyTo?: string; // ID сообщения, на которое отвечаем
+  replyTo?: {
+    _id: string;
+    content: string;
+    sender: WebSocketUser;
+  }; // Полная информация о сообщении, на которое отвечаем
 }
 
 export interface WebSocketChatMessageReceived {

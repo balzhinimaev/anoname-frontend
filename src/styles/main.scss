@@ -12,8 +12,9 @@
 @use 'components/forms' as *;
 @use 'components/chat' as *;
 @use 'components/error' as *;
+@use 'components/emoji-picker' as *;
 
-// 5. CSS переменные для совместимости с Telegram WebApp
+// 3. CSS переменные для совместимости с Telegram WebApp
 :root {
   // Применяем некоторые переменные как CSS custom properties
   // для обратной совместимости с Telegram WebApp
@@ -26,4 +27,14 @@
   --accent-color: #{$accent-color};
   --disabled-bg: #{$disabled-bg};
   --disabled-text: #{$disabled-text};
+} 
+
+// 4. Переопределение Telegram WebApp переменных для темной темы
+body.tg-dark-theme {
+  --tg-theme-bg-color: #0a0a0a;
+  --tg-theme-secondary-bg-color: #111111;
+  --tg-theme-text-color: #f2f2f7;
+  --tg-theme-hint-color: rgba(255, 255, 255, 0.5);
+  --tg-theme-button-color: #0084ff;
+  --tg-theme-button-text-color: #ffffff;
 } 

@@ -76,19 +76,6 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       return;
     }
 
-    // Если сообщение является ответом на другое сообщение
-    let replyToContent: string | undefined;
-    let replyToSender: any = undefined;
-    
-    if (data.message.replyTo) {
-      // Ищем исходное сообщение в списке сообщений
-      const originalMessage = state.messages.find(msg => msg.id === data.message.replyTo);
-      if (originalMessage) {
-        replyToContent = originalMessage.content;
-        replyToSender = originalMessage.sender;
-      }
-    }
-
     const newMessage: any = {
       id: data.message._id,
       content: data.message.content,
@@ -97,15 +84,18 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       sender: data.message.sender,
     };
 
-    // Добавляем поля reply только если они существуют
+    // Если сообщение является ответом на другое сообщение
     if (data.message.replyTo) {
-      newMessage.replyTo = data.message.replyTo;
-    }
-    if (replyToContent) {
-      newMessage.replyToContent = replyToContent;
-    }
-    if (replyToSender) {
-      newMessage.replyToSender = replyToSender;
+      console.log('Получено сообщение с reply:', {
+        messageId: data.message._id,
+        replyToId: data.message.replyTo._id,
+        replyToContent: data.message.replyTo.content,
+        replyToSender: data.message.replyTo.sender
+      });
+      
+      newMessage.replyTo = data.message.replyTo._id;
+      newMessage.replyToContent = data.message.replyTo.content;
+      newMessage.replyToSender = data.message.replyTo.sender;
     }
 
     state._addMessage(newMessage);
